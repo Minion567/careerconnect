@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - CareerConnect</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="admin-app">
+        <div id="admin-login-view">
+            <div class="login-container">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1>CareerConnect Admin</h1>
+                </div>
+                <p>Sign in to manage the platform.</p>
+                <form id="admin-login-form">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="admin-email" required placeholder="Email" value="admin@careerconnect.com">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="admin-password" required placeholder="Password" value="123456">
+                    </div>
+                    <button type="submit" class="admin-button primary">Login</button>
+                    <p class="error-message" id="admin-login-error"></p>
+                </form>
+            </div>
+        </div>
+
+        <div id="admin-dashboard-view" style="display: none;">
+            <aside class="sidebar">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1>Admin Panel</h1>
+                </div>
+                <nav class="menu">
+                    <a href="#" class="menu-item active" data-target="dashboard-main"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    <a href="#" class="menu-item" data-target="students-widget"><i class="fas fa-users"></i> Students</a>
+                    <a href="#" class="menu-item" data-target="colleges-widget"><i class="fas fa-school"></i> Colleges</a>
+                    <a href="#" class="menu-item" data-target="events-widget"><i class="fas fa-calendar-alt"></i> Events</a>
+                </nav>
+                <button id="admin-logout-btn" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </aside>
+
+            <main class="main-content">
+                <header class="main-header">
+                    <div>
+                        <h1 id="welcome-header">Dashboard</h1>
+                        <p id="welcome-subheader">Welcome back, Admin!</p>
+                    </div>
+                    <button class="admin-button" id="add-event-btn-header"><i class="fas fa-plus"></i> Add Event</button>
+                </header>
+
+                <section id="dashboard-main" class="dashboard-widget active">
+                    <div class="stats-grid">
+                        <div class="stat-card students">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <span class="stat-number" id="student-count">0</span>
+                                <span class="stat-label">Total Students</span>
+                            </div>
+                        </div>
+                        <div class="stat-card colleges">
+                            <i class="fas fa-school"></i>
+                            <div>
+                                <span class="stat-number" id="college-count">0</span>
+                                <span class="stat-label">Total Colleges</span>
+                            </div>
+                        </div>
+                        <div class="stat-card events">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div>
+                                <span class="stat-number" id="event-count">0</span>
+                                <span class="stat-label">Upcoming Events</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3>New Student Signups (Last 7 Days)</h3>
+                            <canvas id="signupsChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Aptitude Test Insights</h3>
+                            <canvas id="streamsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bottom-grid">
+                        <div class="recent-activity-container">
+                            <h3>Recent Activity</h3>
+                            <div id="recent-activity-feed">
+                                </div>
+                        </div>
+                        <div class="quick-actions-container">
+                            <h3>Quick Actions</h3>
+                            <a href="#" id="add-college-btn-quick" class="quick-action-btn">
+                                <i class="fas fa-school"></i>
+                                <span>Add New College</span>
+                            </a>
+                            <a href="#" id="seed-colleges-btn" class="quick-action-btn">
+                                <i class="fas fa-database"></i>
+                                <span>Seed 5 Colleges</span>
+                            </a>
+                             <a href="#" id="seed-timeline-btn" class="quick-action-btn">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Seed 3 Events</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="students-widget" class="dashboard-widget">
+                    <h2 class="widget-title">Student Leads</h2>
+                    <div class="table-container">
+                        <table id="students-table">
+                            <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Latest Test Result</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="colleges-widget" class="dashboard-widget">
+                    <div class="widget-header">
+                        <h2 class="widget-title">Manage Colleges</h2>
+                        <button class="admin-button" id="add-college-btn-main"><i class="fas fa-plus"></i> Add New College</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="colleges-table">
+                            <thead><tr><th>Name</th><th>City</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="events-widget" class="dashboard-widget">
+                    <div class="widget-header">
+                            <h2 class="widget-title">Manage Important Dates</h2>
+                        </div>
+                    <div class="table-container">
+                        <table id="events-table">
+                            <thead><tr><th>Title</th><th>Type</th><th>Deadline</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <div id="form-modal" class="modal-wrapper" style="display:none;">
+        <div class="modal-box">
+            <button class="close-btn" id="close-modal-btn"><i class="fas fa-times"></i></button>
+            <h2 id="modal-title">Modal Title</h2>
+            <div id="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBgCIj6tYPgP0aeN_dEx-0tmI_w7SqLtro",
+            authDomain: "careeradvisorhackathon.firebaseapp.com",
+            projectId: "careeradvisorhackathon",
+            storageBucket: "careeradvisorhackathon.appspot.com",
+            messagingSenderId: "1009234050196",
+            appId: "1:1009234050196:web:d273a45def922133180881"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+    <script src="admin.js"></script>
+</body>
+</html>
