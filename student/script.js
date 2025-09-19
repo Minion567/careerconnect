@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const feeRangeRadios = document.querySelectorAll('input[name="feeRange"]');
     const clearFiltersBtn = document.getElementById('clear-filters-btn');
     const collegeSearchInputMain = document.getElementById('college-search-input-main');
+    const streamFilterMain = document.getElementById('stream-filter-main');
     const sortByDropdown = document.getElementById('sort-by');
     const resultsCountSpan = document.getElementById('results-count');
 
@@ -242,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (pageId === 'colleges-content' && collegesFromDB.length > 0) {
             applyFiltersAndSort();
+            try { renderCompareBar(); } catch(e) {}
         }
         if (pageId === 'dashboard-content' && currentUser) {
             loadDashboardData();
@@ -399,6 +401,16 @@ document.addEventListener('DOMContentLoaded', () => {
             collegesFromDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             uniqueCities = [...new Set(collegesFromDB.map(c => c.city).filter(Boolean))].sort();
 
+            // Populate city filter select with unique cities
+            if (cityFilter) {
+                try {
+                    cityFilter.innerHTML = '<option value="">All Cities</option>' + uniqueCities.map(city => `<option value="${city}">${city}</option>`).join('');
+                } catch (e) { console.warn('Error populating city filter', e); }
+            }
+
+            // Ensure the stream dropdown triggers filtering when changed
+            if (streamFilterMain) streamFilterMain.addEventListener('change', applyFiltersAndSort);
+
             // Initial render and setup
             applyFiltersAndSort();
             console.info('Loaded', collegesFromDB.length, 'colleges from Firestore.');
@@ -421,11 +433,38 @@ document.addEventListener('DOMContentLoaded', () => {
         // Debug: show current filter state
         try { console.log('Applying filters', { totalColleges: collegesFromDB.length, search: collegeSearchInputMain ? collegeSearchInputMain.value : null, city: cityFilter ? cityFilter.value : null, selectedTypes: Array.from(collegeTypeCheckboxes).filter(cb=>cb.checked).map(cb=>cb.value) }); } catch (e) {}
         const searchTerm = (collegeSearchInputMain && collegeSearchInputMain.value) ? collegeSearchInputMain.value.toLowerCase() : '';
-        if (searchTerm) { filteredColleges = filteredColleges.filter(c => c.name.toLowerCase().includes(searchTerm) || c.city.toLowerCase().includes(searchTerm)); }
+        if (searchTerm) {
+            filteredColleges = filteredColleges.filter(c => {
+                const name = (c.name || '').toString().toLowerCase();
+                const city = (c.city || '').toString().toLowerCase();
+                const courses = (c.courses || []).join(' ').toString().toLowerCase();
+                return name.includes(searchTerm) || city.includes(searchTerm) || courses.includes(searchTerm);
+            });
+        }
         const selectedCity = cityFilter.value;
         if (selectedCity) { filteredColleges = filteredColleges.filter(c => c.city === selectedCity); }
+        // Stream / All Streams filter (map visible stream names to course keywords)
+        const selectedStream = (streamFilterMain && streamFilterMain.value) ? streamFilterMain.value.toString().trim() : '';
+        if (selectedStream) {
+            const s = selectedStream.toLowerCase();
+            const streamKeywordsMap = {
+                'engineering': ['b.tech','btech','be','b.e','engineering','computer','cse','ece','ee','it','mechanical','civil','technology','tech','mca'],
+                'b.tech': ['b.tech','btech','be','engineering','computer','cse','it','technology'],
+                'mbbs': ['mbbs','bds','medical','medicine','nursing','pharmacy','health'],
+                'medical': ['mbbs','bds','medical','medicine','nursing','pharmacy','health'],
+                'management': ['mba','bba','management','business','commerce','mcom'],
+                'mba': ['mba','management','business','commerce']
+            };
+            let keywords = streamKeywordsMap[s] || [s];
+            // Lowercased haystack: courses, name, stream, type
+            filteredColleges = filteredColleges.filter(c => {
+                const coursesText = Array.isArray(c.courses) ? c.courses.join(' ') : (c.courses || '');
+                const hay = (`${coursesText} ${c.name || ''} ${c.stream || ''} ${c.type || ''}`).toLowerCase();
+                return keywords.some(kw => hay.includes(kw));
+            });
+        }
         // Normalize selected types to lowercase to avoid case/whitespace mismatches
-        const selectedTypes = Array.from(collegeTypeCheckboxes).filter(cb => cb.checked).map(cb => (cb.value || '').toString().trim().toLowerCase());
+    const selectedTypes = Array.from(collegeTypeCheckboxes).filter(cb => cb.checked).map(cb => (cb.value || '').toString().trim().toLowerCase());
         if (selectedTypes.length > 0) {
             // helper to robustly match college type variants
             const matchesType = (collegeTypeRaw, collegeNameRaw, wanted) => {
@@ -463,8 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('applyFiltersAndSort: no colleges matched filters', { searchTerm, selectedCity: cityFilter ? cityFilter.value : null, selectedTypes: Array.from(collegeTypeCheckboxes).filter(cb=>cb.checked).map(cb=>cb.value) });
         }
     }
-
-    // Render colleges into the college list container
     function renderColleges(collegesToRender) {
         if (!collegeListContainer) return;
         collegeListContainer.innerHTML = '';
@@ -496,11 +533,237 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="info-item"><div class="label">Avg. Package</div><div class="value">${college.package ? `₹${college.package} LPA` : 'N/A'}</div></div>
                     </div>
                     <div class="college-card-courses"><div class="label">Popular Courses</div><div class="course-tags">${coursesHtml}</div></div>
-                    <div class="college-card-actions"><button class="btn-primary">View Details</button><button class="btn-outline">Compare</button></div>
+                    <div class="college-card-actions">
+                        ${college.website ? `<a class="btn-primary" href="${college.website}" target="_blank" rel="noreferrer">View Details</a>` : `<button class="btn-primary" disabled>View Details</button>`}
+                        ${(() => {
+                            const idVal = college.id || college.name;
+                            const selected = getCompareList().some(i => i.id === idVal);
+                            const payload = JSON.stringify({ id: idVal, name: college.name, fee: college.fee, placement: college.placement, facilities: college.facilities || [], courses: college.courses || [], website: college.website || '' });
+                            return `<button class="btn-outline compare-btn ${selected ? 'selected' : ''}" aria-pressed="${selected}" data-college='${payload}'>${selected ? 'Selected' : 'Compare'}</button>`;
+                        })()}
+                    </div>
                 </div>`;
             collegeListContainer.appendChild(card);
         });
+        // Attach compare button handlers
+        document.querySelectorAll('.compare-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                try {
+                    const payload = JSON.parse(e.currentTarget.dataset.college);
+                    toggleCompareCollege(payload);
+                } catch (err) { console.error('Failed to parse compare payload', err); }
+            });
+        });
+        // Ensure compare modal exists
+        ensureCompareModal();
     }
+
+    // ----------------- Compare Utilities -----------------
+    function getCompareList() {
+        try { return JSON.parse(localStorage.getItem('collegeCompare') || '[]'); } catch (e) { return []; }
+    }
+    // Persist compare list, update header badge and compare bar
+    function setCompareList(list) { localStorage.setItem('collegeCompare', JSON.stringify(list)); renderCompareBadge(); try { renderCompareBar(); } catch(e) { /* ignore if not ready */ } }
+    // Persist compare list and refresh rendered college cards so button states update
+    function setCompareListAndRefresh(list) { setCompareList(list); try { applyFiltersAndSort(); } catch (e) { /* ignore */ } }
+    function toggleCompareCollege(col) {
+        const list = getCompareList();
+        const exists = list.find(i => i.id === col.id);
+        if (exists) {
+            const newList = list.filter(i => i.id !== col.id);
+            setCompareListAndRefresh(newList);
+        } else {
+            if (list.length >= 3) return alert('You can compare up to 3 colleges only.');
+            list.push(col);
+            setCompareListAndRefresh(list);
+        }
+        // Show/hide compare bar depending on page. If user isn't on colleges page, take them there so they see selections.
+        const collegesPage = document.getElementById('colleges-content');
+        const isOnColleges = collegesPage && collegesPage.classList.contains('active');
+        try {
+            if (!isOnColleges) {
+                // navigate to colleges page; renderCompareBar will be called in showPage
+                showPage('colleges-content');
+            } else {
+                // refresh bar immediately
+                renderCompareBar();
+            }
+        } catch (e) { /* ignore */ }
+    }
+    function renderCompareBadge() {
+        const el = document.getElementById('compare-badge');
+        if (!el) return;
+        const count = getCompareList().length;
+        el.textContent = count > 0 ? `Compare (${count})` : 'Compare';
+    }
+
+    function ensureCompareModal() {
+        if (document.getElementById('compare-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'compare-modal';
+        modal.className = 'modal-wrapper';
+        modal.style.display = 'none';
+        modal.innerHTML = `
+            <div class="modal-box compare-modal">
+                <button id="close-compare-modal" class="close-btn"><i class="fa-solid fa-times"></i></button>
+                <h2 style="text-align:center;">Compare Colleges</h2>
+                <div id="compare-contents"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('close-compare-modal').addEventListener('click', () => { modal.style.display = 'none'; });
+    }
+
+    function showCompareModal() {
+        ensureCompareModal();
+        const modal = document.getElementById('compare-modal');
+        const contents = document.getElementById('compare-contents');
+        const list = getCompareList();
+        if (list.length === 0) {
+            contents.innerHTML = '<p style="text-align:center;">No colleges selected for comparison.</p>';
+            modal.style.display = 'flex'; renderCompareBadge(); return;
+        }
+
+        // Helper to format fee and placement consistently
+        const fmtFee = (f) => f ? `₹${(f/100000).toFixed(1)} L` : 'N/A';
+        const fmtPlacement = (p) => p ? `${p}%` : 'N/A';
+
+        // Build a compact table: attributes as rows, each college as a column
+        const attributes = [
+            { key: 'fee', label: 'Annual Fee', formatter: (c) => (c.fee ? `₹${(c.fee/100000).toFixed(1)} L` : 'N/A'), compare: (a,b) => ( (a||0) - (b||0) ), winner: 'lowest' },
+            { key: 'placement', label: 'Placement', formatter: (c) => (c.placement ? `${c.placement}%` : 'N/A'), compare: (a,b) => ( (b||0) - (a||0) ), winner: 'highest' },
+            { key: 'courses', label: 'Courses', formatter: (c) => ( (c.courses || []).slice(0,6).join(', ') || 'N/A' ), compare: (a,b) => ( ( (cLength(a)) - (cLength(b)) ) ), winner: 'highest' },
+            { key: 'facilities', label: 'Facilities', formatter: (c) => ( (c.facilities || []).slice(0,8).join(', ') || 'N/A' ), compare: (a,b) => ( ( (fLength(a)) - (fLength(b)) ) ), winner: 'highest' }
+        ];
+
+        // helpers for lengths
+        const cLength = (col) => Array.isArray(col.courses) ? col.courses.length : (col.courses ? col.courses.toString().split(',').length : 0);
+        const fLength = (col) => Array.isArray(col.facilities) ? col.facilities.length : (col.facilities ? col.facilities.toString().split(',').length : 0);
+
+        // Prepare head (college names)
+        const headCols = list.map((col, idx) => `<th>${col.name}${col.website ? ` <a href="${col.website}" target="_blank" rel="noreferrer" title="Visit website">🔗</a>` : ''}<div style="margin-top:6px;"><button class=\"remove-compare-btn\" data-id=\"${col.id}\">Remove</button></div></th>`).join('');
+
+        // Compute winners per attribute
+        const winners = {};
+        attributes.forEach(attr => {
+            let bestIndex = 0;
+            let bestValue = null;
+            list.forEach((col, idx) => {
+                let val;
+                if (attr.key === 'fee') val = col.fee || 0;
+                else if (attr.key === 'placement') val = col.placement || 0;
+                else if (attr.key === 'courses') val = cLength(col);
+                else if (attr.key === 'facilities') val = fLength(col);
+                if (bestValue === null) { bestValue = val; bestIndex = idx; }
+                else {
+                    // choose based on winner direction
+                    if (attr.winner === 'highest' && val > bestValue) { bestValue = val; bestIndex = idx; }
+                    if (attr.winner === 'lowest' && val < bestValue) { bestValue = val; bestIndex = idx; }
+                }
+            });
+            winners[attr.key] = bestIndex;
+        });
+
+        // Build table HTML
+        let table = `<table class="compare-table"><thead><tr><th class="attr-name">Attribute</th>${list.map((c, i) => `<th>${c.name}</th>`).join('')}</tr></thead><tbody>`;
+        attributes.forEach(attr => {
+            table += `<tr><td class="attr-name">${attr.label}</td>`;
+            list.forEach((col, idx) => {
+                let cellValue = attr.formatter(col);
+                const isWinner = winners[attr.key] === idx;
+                const cellClass = isWinner ? 'compare-winner' : '';
+                table += `<td class="${cellClass}" data-label="${attr.label}">${cellValue}</td>`;
+            });
+            table += `</tr>`;
+        });
+        table += `</tbody></table>`;
+
+        contents.innerHTML = `
+            <div>${table}</div>
+            <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between; align-items:center;">
+                <div><button id="clear-compare" class="btn-outline">Clear Comparison</button></div>
+                <div style="color:var(--color-text-muted); font-size:0.95rem;">Tip: Click "Remove" below a college name to remove it from comparison.</div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+
+        // Wire Clear and Remove buttons inside new table layout
+        const clearBtn = document.getElementById('clear-compare');
+        if (clearBtn) clearBtn.addEventListener('click', () => { setCompareList([]); document.getElementById('compare-modal').style.display = 'none'; });
+        document.querySelectorAll('.remove-compare-btn').forEach(btn => btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.dataset.id;
+            const newList = getCompareList().filter(i => i.id !== id);
+            setCompareListAndRefresh(newList);
+            // Re-open modal with updated list (or close if empty)
+            if (getCompareList().length > 0) showCompareModal(); else document.getElementById('compare-modal').style.display = 'none';
+        }));
+
+        renderCompareBadge();
+    }
+
+    // Header compare button removed from HTML; keep badge rendering harmlessly guarded.
+    // renderCompareBadge() will no-op when element is absent.
+    renderCompareBadge();
+    // Create and attach compare selection bar (sticky) to the DOM
+    // Create the compare bar but only attach it when on the colleges page
+    function createCompareBar() {
+        if (document.getElementById('compare-bar')) return;
+        const bar = document.createElement('div');
+        bar.id = 'compare-bar';
+        bar.style.display = 'none'; // start hidden until explicitly shown on colleges page with items
+        bar.innerHTML = `
+            <div class="compare-inner">
+                <div id="compare-chips" class="compare-chips"></div>
+                <div class="compare-actions">
+                    <button id="compare-clear" class="btn-outline">Clear</button>
+                    <button id="compare-now" class="compare-now-btn btn-primary" disabled>Compare Now</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(bar);
+        document.getElementById('compare-clear').addEventListener('click', () => { setCompareListAndRefresh([]); hideCompareBar(); });
+        document.getElementById('compare-now').addEventListener('click', () => { showCompareModal(); });
+    }
+
+    function hideCompareBar() {
+        const b = document.getElementById('compare-bar'); if (b) b.style.display = 'none';
+    }
+
+    function showCompareBarIfOnColleges() {
+        const b = document.getElementById('compare-bar');
+        if (!b) return;
+        // only show if colleges page is active
+        const collegesPage = document.getElementById('colleges-content');
+        const isActive = collegesPage && collegesPage.classList.contains('active');
+        const list = getCompareList();
+        if (isActive && list.length > 0) b.style.display = 'flex'; else b.style.display = 'none';
+    }
+
+    function renderCompareBar() {
+        createCompareBar();
+        const chipsContainer = document.getElementById('compare-chips');
+        const list = getCompareList();
+        chipsContainer.innerHTML = '';
+        list.forEach(col => {
+            const chip = document.createElement('div');
+            chip.className = 'compare-chip';
+            chip.innerHTML = `<span class="chip-name">${col.name}</span><button class="remove-chip" data-id="${col.id}">✕</button>`;
+            chipsContainer.appendChild(chip);
+        });
+        // wire remove
+        chipsContainer.querySelectorAll('.remove-chip').forEach(btn => btn.addEventListener('click', (e) => {
+            const id = e.currentTarget.dataset.id;
+            setCompareListAndRefresh(getCompareList().filter(c => c.id !== id));
+        }));
+        const nowBtn = document.getElementById('compare-now');
+        if (nowBtn) nowBtn.disabled = list.length < 2;
+        // show/hide depending on current page
+        showCompareBarIfOnColleges();
+    }
+
+    // Render initially
+    try { renderCompareBar(); } catch (e) { /* ignore */ }
     
     // Dashboard Logic
     function loadAptitudeResults() {
@@ -727,7 +990,8 @@ async function generateAIResponse(userMessage) {
                 if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
                 else el.value = '';
             });
-            collegeSearchInputMain.value = '';
+            if (collegeSearchInputMain) collegeSearchInputMain.value = '';
+            if (streamFilterMain) streamFilterMain.value = '';
             applyFiltersAndSort();
         });
     }
@@ -735,6 +999,11 @@ async function generateAIResponse(userMessage) {
     collegeTypeCheckboxes.forEach(el => el.addEventListener('change', applyFiltersAndSort));
     feeRangeRadios.forEach(el => el.addEventListener('change', applyFiltersAndSort));
     if(collegeSearchInputMain) collegeSearchInputMain.addEventListener('keyup', applyFiltersAndSort);
+    // Wire the hero search button (in colleges hero) - look for a nearby button in the DOM
+    try {
+        const heroSearchButton = document.querySelector('.college-search-box .btn-primary');
+        if (heroSearchButton) heroSearchButton.addEventListener('click', (e) => { e.preventDefault(); applyFiltersAndSort(); showPage('colleges-content'); });
+    } catch (e) { /* ignore */ }
 
     if(aiChatForm) aiChatForm.addEventListener('submit', (e) => { e.preventDefault(); sendMessageToAI(); });
     if(chatInput) chatInput.addEventListener('input', () => { chatInput.style.height = 'auto'; chatInput.style.height = (chatInput.scrollHeight) + 'px'; });

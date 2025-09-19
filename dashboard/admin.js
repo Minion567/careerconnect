@@ -251,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" name="city" placeholder="City" required>
                 <input type="number" name="nirf" placeholder="NIRF Rank (optional)">
                 <input class="full-width" type="url" name="image" placeholder="Image URL" required>
+                <input class="full-width" type="url" name="website" placeholder="College Website (https://...)">
                 <input type="text" name="lat" placeholder="Latitude (e.g., 30.9010)" required>
                 <input type="text" name="lon" placeholder="Longitude (e.g., 75.8573)" required>
                 <input class="full-width" type="text" name="courses" placeholder="Courses (comma-separated)" required>
@@ -302,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(e.target);
             db.collection('colleges').add({
                 name: formData.get('name'), city: formData.get('city'),
-                image: formData.get('image'), lat: parseFloat(formData.get('lat')),
+                image: formData.get('image'), website: formData.get('website') || '', lat: parseFloat(formData.get('lat')),
                 lon: parseFloat(formData.get('lon')),
                 courses: formData.get('courses').split(',').map(item => item.trim()),
                 facilities: formData.get('facilities').split(',').map(item => item.trim()),
@@ -355,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" name="city" placeholder="City" value="${(data.city||'').replace(/"/g, '&quot;')}" required>
                 <input type="number" name="nirf" placeholder="NIRF Rank (optional)" value="${data.nirf || ''}">
                 <input class="full-width" type="url" name="image" placeholder="Image URL" value="${(data.image||'').replace(/"/g, '&quot;')}" required>
+                <input class="full-width" type="url" name="website" placeholder="College Website (https://...)" value="${(data.website||'').replace(/"/g, '&quot;')}">
                 <input type="text" name="lat" placeholder="Latitude (e.g., 30.9010)" value="${data.lat || ''}" required>
                 <input type="text" name="lon" placeholder="Longitude (e.g., 75.8573)" value="${data.lon || ''}" required>
                 <input class="full-width" type="text" name="courses" placeholder="Courses (comma-separated)" value="${(data.courses || []).join(', ')}" required>
@@ -382,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(e.target);
             const updated = {
                 name: formData.get('name'), city: formData.get('city'),
-                image: formData.get('image'), lat: parseFloat(formData.get('lat')),
+                image: formData.get('image'), website: formData.get('website') || '', lat: parseFloat(formData.get('lat')),
                 lon: parseFloat(formData.get('lon')),
                 courses: formData.get('courses').split(',').map(item => item.trim()),
                 facilities: formData.get('facilities').split(',').map(item => item.trim()),
@@ -398,5 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONSOLE HELPERS (Seeder functions) ---
     window.seedColleges = function() { console.log("Seeding colleges..."); const colleges = [ { name: "SCD Government College", city: "Ludhiana", image: "https://images.unsplash.com/photo-1562774053-701939374585", lat: 30.9010, lon: 75.8573, courses: ["B.A.", "B.Sc.", "B.Com."], facilities: ["Hostel", "Library", "Wi-Fi", "Labs"], type: "Government", fee: 15000, placement: 60, package: 3.5, nirf: 101 }, { name: "Government Mohindra College", city: "Patiala", image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b", lat: 30.3398, lon: 76.3869, courses: ["B.A.", "B.Sc.", "BCA"], facilities: ["Library", "Sports Complex", "Labs"], type: "Government", fee: 18000, placement: 55, package: 3.2, nirf: 125 }, { name: "NIT Jalandhar", city: "Jalandhar", image: "https://images.unsplash.com/photo-1607237138185-e894ee31b2af", lat: 31.3954, lon: 75.5355, courses: ["B.Tech", "M.Tech", "Ph.D"], facilities: ["Hostel", "Wi-Fi", "Labs", "Gym"], type: "Government", fee: 150000, placement: 95, package: 12.5, nirf: 46 }, { name: "Government Medical College", city: "Amritsar", image: "https://images.unsplash.com/photo-1584931422245-c3dd3b35065c", lat: 31.6340, lon: 74.8723, courses: ["MBBS", "MD", "MS"], facilities: ["Hostel", "Labs", "Library", "Hospital"], type: "Government", fee: 80000, placement: 100, package: 18.0, nirf: 55 }, { name: "Guru Nanak Dev University", city: "Amritsar", image: "https://images.unsplash.com/photo-1532649538693-79046d41e58c", lat: 31.6366, lon: 74.8239, courses: ["B.A.", "B.Sc.", "B.Tech", "LLB"], facilities: ["Hostel", "Library", "Wi-Fi", "Sports Complex"], type: "Government", fee: 45000, placement: 75, package: 5.5, nirf: 49 } ]; const batch = db.batch(); colleges.forEach(c => batch.set(db.collection("colleges").doc(), c)); batch.commit().then(() => alert("Successfully added 5 sample colleges!")); }
+    window.seedColleges = function() { console.log("Seeding colleges..."); const colleges = [ { name: "SCD Government College", city: "Ludhiana", image: "https://images.unsplash.com/photo-1562774053-701939374585", website: "https://scdgovcollege.example.edu", lat: 30.9010, lon: 75.8573, courses: ["B.A.", "B.Sc.", "B.Com."], facilities: ["Hostel", "Library", "Wi-Fi", "Labs"], type: "Government", fee: 15000, placement: 60, package: 3.5, nirf: 101 }, { name: "Government Mohindra College", city: "Patiala", image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b", website: "https://mohindra.example.edu", lat: 30.3398, lon: 76.3869, courses: ["B.A.", "B.Sc.", "BCA"], facilities: ["Library", "Sports Complex", "Labs"], type: "Government", fee: 18000, placement: 55, package: 3.2, nirf: 125 }, { name: "NIT Jalandhar", city: "Jalandhar", image: "https://images.unsplash.com/photo-1607237138185-e894ee31b2af", website: "https://nitj.ac.in", lat: 31.3954, lon: 75.5355, courses: ["B.Tech", "M.Tech", "Ph.D"], facilities: ["Hostel", "Wi-Fi", "Labs", "Gym"], type: "Government", fee: 150000, placement: 95, package: 12.5, nirf: 46 }, { name: "Government Medical College", city: "Amritsar", image: "https://images.unsplash.com/photo-1584931422245-c3dd3b35065c", website: "https://gmc.example.edu", lat: 31.6340, lon: 74.8723, courses: ["MBBS", "MD", "MS"], facilities: ["Hostel", "Labs", "Library", "Hospital"], type: "Government", fee: 80000, placement: 100, package: 18.0, nirf: 55 }, { name: "Guru Nanak Dev University", city: "Amritsar", image: "https://images.unsplash.com/photo-1532649538693-79046d41e58c", website: "https://gndu.ac.in", lat: 31.6366, lon: 74.8239, courses: ["B.A.", "B.Sc.", "B.Tech", "LLB"], facilities: ["Hostel", "Library", "Wi-Fi", "Sports Complex"], type: "Government", fee: 45000, placement: 75, package: 5.5, nirf: 49 } ]; const batch = db.batch(); colleges.forEach(c => batch.set(db.collection("colleges").doc(), c)); batch.commit().then(() => alert("Successfully added 5 sample colleges!")); }
     window.seedTimeline = function() { console.log("Seeding timeline..."); const events = [ { title: "JEE Mains 2026 Session 1 Reg.", type: "exam", description: "Registration window for the first session.", deadline: "2025-11-30" }, { title: "NEET 2026 Registration", type: "exam", description: "National Eligibility cum Entrance Test for medical courses.", deadline: "2026-01-31" }, { title: "Punjab University Admissions", type: "admission", description: "Admission forms for B.A., B.Sc., B.Com. are available.", deadline: "2026-05-15" } ]; const batch = db.batch(); events.forEach(e => batch.set(db.collection("timelineEvents").doc(), e)); batch.commit().then(() => alert("Successfully added 3 timeline events!")); }
 });
