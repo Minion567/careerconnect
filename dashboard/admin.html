@@ -44,6 +44,7 @@
                     <a href="#" class="menu-item" data-target="students-widget"><i class="fas fa-users"></i> Students</a>
                     <a href="#" class="menu-item" data-target="colleges-widget"><i class="fas fa-school"></i> Colleges</a>
                     <a href="#" class="menu-item" data-target="events-widget"><i class="fas fa-calendar-alt"></i> Events</a>
+                    <a href="#" class="menu-item" data-target="testinomials-widget"><i class="fas fa-quote-right"></i> Testimonials</a>
                 </nav>
                 <button id="admin-logout-btn" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </aside>
@@ -133,6 +134,26 @@
                     <div class="table-container">
                         <table id="colleges-table">
                             <thead><tr><th>Name</th><th>City</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="testinomials-widget" class="dashboard-widget">
+                    <div class="widget-header">
+                        <h2 class="widget-title">Manage Testimonials</h2>
+                        <button class="admin-button" id="add-testimonial-btn-main"><i class="fas fa-plus"></i> Add New Testimonial</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="testimonials-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Testimonial</th>
+                                    <th>Rating</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
                             <tbody></tbody>
                         </table>
                     </div>
