@@ -282,6 +282,16 @@ a {
   margin-right: 0.5rem;
 }
 
+.hamburger-menu {
+  display: none; /* Hidden by default on desktop */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1001; /* Above nav links */
+  color: var(--color-text-primary);
+}
+
 /* ======================================================================== */
 /* ! --- HOMEPAGE STYLES --- */
 /* ======================================================================== */
@@ -2171,309 +2181,131 @@ a {
 }
 
 /* ======================================================================== */
-/* ! --- COMPARE MODAL / COMPARISON STYLES --- */
+/* ! --- RESPONSIVE STYLES --- */
 /* ======================================================================== */
-.compare-grid {
-  display: flex;
-  gap: 1rem;
-  align-items: stretch;
-  justify-content: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-.compare-column {
-  flex: 1 1 0;
-  background: white;
-  border-radius: 0.75rem;
-  padding: 1rem 1.25rem;
-  box-shadow: var(--shadow-sm);
-  text-align: center;
-  min-width: 200px;
-}
-.compare-column .college-name {
-  font-size: 1.125rem;
-  font-weight: 800;
-  margin-bottom: 0.25rem;
-}
-.compare-column .placement-badge {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 0.75rem;
-}
-.compare-attribute-row {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  margin: 0.5rem 0;
-}
-.compare-attribute-row .attr-label {
-  flex: 0 0 140px;
-  text-align: left;
-  color: var(--color-text-secondary);
-  font-weight: 600;
-}
-.compare-attribute-row .attr-values {
-  flex: 1;
-  display: flex;
-  gap: 1rem;
-}
-.compare-attribute {
-  flex: 1;
-  text-align: left;
-  background: var(--color-surface);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-}
-.compare-attribute.diff {
-  outline: 2px solid rgba(220, 38, 38, 0.12);
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.06);
-}
 
-/* Vertical divider between two columns (visual mid-line) */
-.compare-grid.two .compare-column + .compare-column {
-  position: relative;
-}
-.compare-grid.two .compare-column + .compare-column::before {
-  content: "";
-  position: absolute;
-  left: -0.5rem;
-  top: 8%;
-  bottom: 8%;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.06),
-    rgba(0, 0, 0, 0.12)
-  );
-}
+@media (max-width: 1024px) {
+  /* --- HAMBURGER MENU & NAV --- */
+  .hamburger-menu {
+    display: block; /* Show hamburger on mobile */
+  }
 
-/* Modal box wider for comparison */
-.modal-box.compare-modal {
-  max-width: 900px;
-  width: 95%;
-  padding: 2rem;
-  text-align: left;
-}
-
-/* Remove default small compare-card styles if present and tune layout */
-.compare-card {
-  background: transparent;
-  box-shadow: none;
-  border: none;
-}
-
-@media (max-width: 800px) {
-  .compare-grid {
+  .main-nav .nav-links {
+    display: flex;
     flex-direction: column;
-  }
-  .compare-attribute-row {
-    flex-direction: column;
-  }
-  .compare-attribute-row .attr-label {
-    flex: none;
-  }
-}
-
-/* Compact comparison table layout (attributes as rows, colleges as columns) */
-.compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.5rem;
-}
-.compare-table thead th {
-  text-align: left;
-  padding: 0.75rem;
-  background: var(--color-surface);
-  font-weight: 700;
-  border-bottom: 1px solid var(--color-border);
-}
-.compare-table tbody td {
-  padding: 0.75rem;
-  vertical-align: top;
-  border-bottom: 1px solid var(--color-border);
-}
-.compare-table .attr-name {
-  width: 220px;
-  font-weight: 700;
-  color: var(--color-text-secondary);
-}
-.compare-winner {
-  background: linear-gradient(
-    90deg,
-    rgba(16, 185, 129, 0.08),
-    rgba(16, 185, 129, 0.03)
-  );
-}
-.compare-loser {
-  background: linear-gradient(
-    90deg,
-    rgba(220, 38, 38, 0.04),
-    rgba(220, 38, 38, 0.02)
-  );
-}
-
-@media (max-width: 720px) {
-  .compare-table thead {
-    display: none;
-  }
-  .compare-table,
-  .compare-table tbody,
-  .compare-table tr,
-  .compare-table td {
-    display: block;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    position: fixed;
+    top: 0;
+    right: -100%; /* Start off-screen */
     width: 100%;
+    height: 100vh;
+    background-color: rgba(30, 41, 59, 0.95); /* Dark background with opacity */
+    backdrop-filter: blur(8px);
+    transition: right 0.4s ease-in-out;
   }
-  .compare-table tr {
-    margin-bottom: 1rem;
+  .main-nav .nav-links.nav-active {
+    right: 0; /* Slide in */
   }
-  .compare-table td {
-    padding-left: 50%;
-    position: relative;
+  .main-nav .nav-links a {
+    color: white;
+    font-size: 1.5rem;
   }
-  .compare-table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 1rem;
-    top: 0.75rem;
-    font-weight: 700;
-    color: var(--color-text-secondary);
+
+  /* --- GENERAL LAYOUT & FONT SIZES --- */
+  .section-title h2 {
+    font-size: 1.75rem;
+  }
+  .section-title p {
+    font-size: 1rem;
+  }
+  
+  /* --- HERO SECTION --- */
+  .hero-section {
+    padding: 3rem 0;
+  }
+  .hero-section .hero-content h1 {
+    font-size: 2.25rem;
+  }
+  .hero-section .hero-content p {
+    font-size: 1rem;
+  }
+
+  /* --- GRIDS (stack them all) --- */
+  .hero-section .grid-container,
+  .ai-preview-section .grid-container,
+  .discover-colleges-section .grid-container,
+  .assessment-science .grid-container,
+  .dashboard-grid,
+  .ai-counselor-layout,
+  .main-footer .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  /* --- SPECIFIC PAGE ADJUSTMENTS --- */
+  
+  /* Colleges Page */
+  .colleges-layout .filters-sidebar .filter-card {
+    position: static; /* un-stick the filter sidebar */
+  }
+  .college-search-box {
+    grid-template-columns: 1fr;
+  }
+
+  /* Career Explorer */
+  .career-grid-section .grid-container {
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .career-grid-section .grid-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* AI Counselor */
+  .ai-counselor-layout {
+    height: auto;
+  }
+  .chat-interface {
+    height: 70vh; /* Adjust chat height on mobile */
+  }
+
+  /* Footer */
+  .main-footer .company-info {
+    grid-column: span 1 / span 1; /* Reset column span */
   }
 }
 
-/* Compare selection bar (sticky bottom) */
-/* Compact floating compare control (bottom-right on desktop, full-width on small screens) */
-.compare-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin-left: auto;
-}
-#compare-bar {
-  position: fixed;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  z-index: 3000;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.6rem;
-  justify-content: flex-start;
-  max-width: 360px;
-  min-width: 200px;
-  width: auto;
-  backdrop-filter: blur(6px);
-}
-/* Stack chips vertically to show full college names */
-.compare-chips {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: stretch;
-  overflow-y: auto;
-  padding-right: 0.25rem;
-  max-height: 220px;
-  width: 220px;
-}
-.compare-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--color-surface);
-  padding: 0.6rem 0.9rem;
-  border-radius: 10px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  box-shadow: var(--shadow-sm);
-  white-space: normal;
-  text-align: left;
-  width: 100%;
-  box-sizing: border-box;
-}
-.compare-chip .remove-chip {
-  background: transparent;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-weight: 700;
-  padding-left: 0.35rem;
-  margin-left: auto;
-}
-.compare-now-btn {
-  background: var(--color-primary);
-  color: white;
-  padding: 0.45rem 0.9rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: var(--shadow-sm);
-}
-.compare-now-btn[disabled] {
-  background: linear-gradient(
-    90deg,
-    rgba(30, 64, 175, 0.12),
-    rgba(30, 64, 175, 0.06)
-  );
-  cursor: not-allowed;
-  color: var(--color-text-muted);
-}
-.compare-bar-label {
-  color: var(--color-text-secondary);
-  font-weight: 600;
-  margin-right: 0.5rem;
+@media (max-width: 768px) {
+    .stats-section .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .journey-section .steps-container {
+        grid-template-columns: 1fr;
+    }
+    .stories-section .story-card {
+        grid-template-columns: 1fr;
+    }
+    .logos-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .college-card-info {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        text-align: center;
+    }
+     .college-card-info .info-item:last-child {
+        grid-column: 1 / -1; /* Make last item full-width if there are 3 */
+    }
+    .assessment-hero .stats-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
-@media (max-width: 420px) {
-  /* On very small screens use full-width bottom bar with horizontal chips */
-  #compare-bar {
-    left: 0.5rem;
-    right: 0.5rem;
-    bottom: 0.5rem;
-    width: auto;
-    max-width: none;
-    padding: 0.5rem;
-  }
-  .compare-chips {
-    max-width: calc(100% - 140px);
-    flex-direction: row;
-    gap: 0.5rem;
-    max-height: none;
-    overflow-x: auto;
-    width: auto;
-  }
-  .compare-chip {
-    font-size: 0.95rem;
-    min-width: 120px;
-    border-radius: 999px;
-  }
-  .compare-chip .remove-chip {
-    margin-left: 0.5rem;
-  }
-}
-
-/* Stack action buttons vertically on desktop to keep bar compact */
-.compare-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  margin-left: 8px;
-}
-.compare-actions .btn-outline {
-  padding: 0.35rem 0.6rem;
-  color: white;
-}
-.compare-actions .compare-now-btn {
-  padding: 0.45rem 0.9rem;
-}
-
-@media (min-width: 1024px) {
-  /* slightly increase max height for large screens */
-  .compare-chips {
-    max-height: 320px;
+@media only screen and (max-width: 1030px) {
+  #login-signup-btn-nav {
+    background-color: lightblue;
+    display: none;
   }
 }

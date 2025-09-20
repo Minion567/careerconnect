@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userAuthSection = document.getElementById('user-auth-section');
     const pages = document.querySelectorAll('.page-content');
     const navLinks = document.querySelectorAll('#main-nav-links a');
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const mainNavLinks = document.getElementById('main-nav-links');
     
     // Modals & Auth
     const authContainer = document.getElementById('auth-container');
@@ -253,6 +255,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================
     // ! --- MAIN APP LOGIC ---
     // ===================================================================
+    
+    // Hamburger Menu Logic
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', () => {
+            mainNavLinks.classList.toggle('nav-active');
+        });
+
+        // Close menu when a link is clicked
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (mainNavLinks.classList.contains('nav-active')) {
+                    mainNavLinks.classList.remove('nav-active');
+                }
+            });
+        });
+    }
+
 
     // Authentication
     auth.onAuthStateChanged(user => {
@@ -899,7 +918,7 @@ function hideTypingIndicator() {
 }
 
 async function generateAIResponse(userMessage) {
-    const API_KEY = "AIzaSyByIfZG5TGeWwAyyGa2RYyv6MOkbE4a8v8"; 
+    const API_KEY = "YOUR_GEMINI_API_KEY"; 
     const url =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
 
