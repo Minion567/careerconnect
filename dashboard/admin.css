@@ -164,10 +164,7 @@ body {
     align-items: center;
     margin-bottom: 2rem;
 }
-.main-header h1 { font-size: 1.75rem; }
-.main-header p { color: var(--text-secondary); }
-.main-header .admin-button { width: auto; }
-
+#main-header h1 { font-size: 1.75rem; }
 /* Make the header action buttons more visible (bright primary background) */
 #add-event-btn-header,
 #add-college-btn-main {
@@ -180,14 +177,28 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(74, 71, 226, 0.22);
 }
-
-/* Quick action 'Add New College' should also be clearly visible */
 #add-college-btn-quick {
     background-image: var(--blue-gradient);
     color: white;
 }
 #add-college-btn-quick:hover {
     opacity: 0.95;
+}
+
+
+.modal-wrapper {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: flex-start;
+    padding-top: 24px; 
+    z-index: 1000;
+}
+.modal-box {
+    background: white; padding: 2rem; border-radius: 12px;
+    width: 90%; max-width: 600px; position: relative;
+    max-height: calc(100vh - 48px); 
+    overflow-y: auto; 
 }
 
 .dashboard-widget { display: none; }
@@ -326,6 +337,7 @@ tbody tr:hover { background-color: #f9fafb; }
 .modal-box {
     background: white; padding: 2rem; border-radius: 12px;
     width: 90%; max-width: 600px; position: relative;
+    height: 100vh;
 }
 .close-btn {
     position: absolute; top: 1rem; right: 1rem;
