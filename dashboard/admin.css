@@ -170,13 +170,15 @@ body {
 
 /* Make the header action buttons more visible (bright primary background) */
 #add-event-btn-header,
-#add-college-btn-main {
+#add-college-btn-main,
+#add-testimonial-btn-main {
     background-image: var(--blue-gradient);
     color: white;
     box-shadow: 0 6px 18px rgba(74, 71, 226, 0.18);
 }
 #add-event-btn-header:hover,
-#add-college-btn-main:hover {
+#add-college-btn-main:hover,
+#add-testimonial-btn-main:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(74, 71, 226, 0.22);
 }
@@ -324,8 +326,14 @@ tbody tr:hover { background-color: #f9fafb; }
     z-index: 1000;
 }
 .modal-box {
-    background: white; padding: 2rem; border-radius: 12px;
-    width: 90%; max-width: 600px; position: relative;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .close-btn {
     position: absolute; top: 1rem; right: 1rem;
@@ -335,8 +343,9 @@ tbody tr:hover { background-color: #f9fafb; }
 .modal-box h2 { margin-bottom: 1.5rem; }
 .modal-box form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .modal-box form .full-width { grid-column: 1 / -1; }
-.modal-box form input, .modal-box form select {
+.modal-box form input, .modal-box form select, .modal-box form textarea {
     width: 100%; padding: 0.8rem;
     border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem;
+    font-family: 'Inter', sans-serif;
 }
 .modal-box form .admin-button { margin-top: 1rem; grid-column: 1 / -1;}
