@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resume Builder</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    .form-section {
+      width: 50%;
+      padding: 20px;
+      background: #fff;
+      overflow-y: auto;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    .preview {
+      width: 50%;
+      padding: 30px;
+      background: #fdfdfd;
+      overflow-y: auto;
+      border-left: 2px solid #eee;
+      position: relative;
+    }
+    .profile-pic {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ccc;
+    }
+    .step { display: none; }
+    .step.active { display: block; }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .next { background: #3498db; color: white; }
+    .back { background: #95a5a6; color: white; }
+    .download { background: #27ae60; color: white; }
+    .add { background: #8e44ad; color: white; }
+    .remove { background: #c0392b; color: white; }
+    h2 { margin-top: 0; }
+
+    /* Resume Styling */
+    #resumePreview { font-family: "Segoe UI", Tahoma, sans-serif; color: #2c3e50; }
+    #resumePreview h1 { margin: 0; font-size: 28px; color: #2c3e50; }
+    #resumePreview h2 { font-size: 16px; color: #34495e; margin-top: 4px; }
+    .section { margin-top: 20px; }
+    .section h3 {
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: #3498db;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 3px;
+    }
+    .section p, .section li { margin: 5px 0; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <!-- Left side: Form -->
+  <div class="form-section">
+    <h2 id="formTitle">Contact Info</h2>
+
+    <!-- Step 1: Contact -->
+    <div class="step active" id="step0">
+      <input id="fname" placeholder="First Name">
+      <input id="lname" placeholder="Last Name">
+      <input id="city" placeholder="City">
+      <input id="postal" placeholder="Postal Code">
+      <input id="phone" placeholder="Phone">
+      <input id="email" placeholder="Email">
+      <label>Upload Photo:</label>
+      <input type="file" id="profilePicInput" accept="image/*">
+    </div>
+
+    <!-- Step 2: Experience -->
+    <div class="step" id="step1">
+      <div id="experienceFields"></div>
+      <button class="add" onclick="addExperience()">+ Add Experience</button>
+    </div>
+
+    <!-- Step 3: Education -->
+    <div class="step" id="step2">
+      <div id="educationFields"></div>
+      <button class="add" onclick="addEducation()">+ Add Education</button>
+    </div>
+
+    <!-- Step 4: Skills -->
+    <div class="step" id="step3">
+      <div id="skillsFields"></div>
+      <button class="add" onclick="addSkill()">+ Add Skill</button>
+    </div>
+
+    <!-- Step 5: About -->
+    <div class="step" id="step4">
+      <input id="aboutName" placeholder="Full Name (again for About)">
+      <input id="aboutFather" placeholder="Father's Name">
+      <textarea id="aboutHobbies" placeholder="Hobbies"></textarea>
+      <textarea id="aboutOther" placeholder="Other Details / Bio"></textarea>
+    </div>
+
+    <!-- Navigation -->
+    <div>
+      <button class="back" onclick="prevStep()">Back</button>
+      <button class="next" onclick="nextStep()">Next</button>
+      <button class="download" onclick="downloadPDF()">Download as PDF</button>
+    </div>
+  </div>
+
+  <!-- Right side: Resume Preview -->
+  <div class="preview" id="resumePreview">
+    <img id="prevProfilePic" class="profile-pic" src="" alt="Profile Picture" style="display:none;">
+    <h1 id="prevName">Your Name</h1>
+    <h2 id="prevContact">Email | Phone</h2>
+    <p id="prevLocation">City, Postal Code</p>
+
+    <div class="section">
+      <h3>Experience</h3>
+      <div id="prevExperience">Your work experience will appear here.</div>
+    </div>
+    <div class="section">
+      <h3>Education</h3>
+      <div id="prevEducation">Your education will appear here.</div>
+    </div>
+    <div class="section">
+      <h3>Skills</h3>
+      <ul id="prevSkills"><li>Your skills will appear here.</li></ul>
+    </div>
+    <div class="section">
+      <h3>About Me</h3>
+      <p><b>Name:</b> <span id="prevAboutName">-</span></p>
+      <p><b>Father's Name:</b> <span id="prevAboutFather">-</span></p>
+      <p><b>Hobbies:</b> <span id="prevAboutHobbies">-</span></p>
+      <p id="prevAboutOther">Your short bio will appear here.</p>
+    </div>
+  </div>
+
+<!-- JS Logic -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script>
+  let currentStep = 0;
+  const steps = document.querySelectorAll(".step");
+  const titles = ["Contact Info","Experience","Education","Skills","About"];
+
+  function showStep(n) {
+    steps.forEach((step, i) => step.classList.toggle("active", i === n));
+    document.getElementById("formTitle").innerText = titles[n];
+  }
+
+  function nextStep() {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      showStep(currentStep);
+    }
+    updatePreview();
+  }
+
+  function prevStep() {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+    updatePreview();
+  }
+
+  // Add Experience fields
+  function addExperience() {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <input placeholder="Job Title" class="expTitle">
+      <input placeholder="Company" class="expCompany">
+      <input placeholder="Years (e.g. 2020-2023)" class="expYears">
+      <textarea placeholder="Description" class="expDesc"></textarea>
+      <button class="remove" onclick="this.parentNode.remove(); updatePreview()">Remove</button>
+      <hr>`;
+    document.getElementById("experienceFields").appendChild(div);
+  }
+
+  // Add Education fields
+  function addEducation() {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <input placeholder="Degree / Course" class="eduDegree">
+      <input placeholder="Institution" class="eduInstitution">
+      <input placeholder="Years (e.g. 2018-2022)" class="eduYears">
+      <button class="remove" onclick="this.parentNode.remove(); updatePreview()">Remove</button>
+      <hr>`;
+    document.getElementById("educationFields").appendChild(div);
+  }
+
+  // Add Skill field
+  function addSkill() {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <input placeholder="Skill" class="skillName">
+      <button class="remove" onclick="this.parentNode.remove(); updatePreview()">Remove</button>
+      <hr>`;
+    document.getElementById("skillsFields").appendChild(div);
+  }
+
+  // Update Resume Preview
+  function updatePreview() {
+    const fname = document.getElementById("fname").value;
+    const lname = document.getElementById("lname").value;
+    const city = document.getElementById("city").value;
+    const postal = document.getElementById("postal").value;
+    const phone = document.getElementById("phone").value;
+    const email = document.getElementById("email").value;
+
+    document.getElementById("prevName").innerText = fname + " " + lname;
+    document.getElementById("prevContact").innerText = email + " | " + phone;
+    document.getElementById("prevLocation").innerText = city + (postal ? ", " + postal : "");
+
+    // Experience
+    let expHtml = "";
+    document.querySelectorAll("#experienceFields > div").forEach(div => {
+      const title = div.querySelector(".expTitle").value;
+      const company = div.querySelector(".expCompany").value;
+      const years = div.querySelector(".expYears").value;
+      const desc = div.querySelector(".expDesc").value;
+      expHtml += `<p><b>${title}</b> at ${company} (${years})<br>${desc}</p>`;
+    });
+    document.getElementById("prevExperience").innerHTML = expHtml || "Your work experience will appear here.";
+
+    // Education
+    let eduHtml = "";
+    document.querySelectorAll("#educationFields > div").forEach(div => {
+      const degree = div.querySelector(".eduDegree").value;
+      const inst = div.querySelector(".eduInstitution").value;
+      const years = div.querySelector(".eduYears").value;
+      eduHtml += `<p><b>${degree}</b> - ${inst} (${years})</p>`;
+    });
+    document.getElementById("prevEducation").innerHTML = eduHtml || "Your education will appear here.";
+
+    // Skills
+    let skillHtml = "";
+    document.querySelectorAll("#skillsFields > div").forEach(div => {
+      const skill = div.querySelector(".skillName").value;
+      if (skill.trim()) skillHtml += `<li>${skill}</li>`;
+    });
+    document.getElementById("prevSkills").innerHTML = skillHtml || "<li>Your skills will appear here.</li>";
+
+    // About
+    document.getElementById("prevAboutName").innerText = document.getElementById("aboutName").value || "-";
+    document.getElementById("prevAboutFather").innerText = document.getElementById("aboutFather").value || "-";
+    document.getElementById("prevAboutHobbies").innerText = document.getElementById("aboutHobbies").value || "-";
+    document.getElementById("prevAboutOther").innerText = document.getElementById("aboutOther").value || "Your short bio will appear here.";
+  }
+
+  // Live update preview
+  document.addEventListener("input", updatePreview);
+
+  // Profile picture upload
+  document.getElementById("profilePicInput").addEventListener("change", function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.getElementById("prevProfilePic");
+        img.src = e.target.result;
+        img.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  updatePreview();
+
+  // PDF Download
+  function downloadPDF() {
+    const resume = document.getElementById("resumePreview");
+    const opt = {
+      margin: 0.5,
+      filename: 'My_Resume.pdf',
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(resume).set(opt).save();
+  }
+</script>
+
+</body>
+</html>
