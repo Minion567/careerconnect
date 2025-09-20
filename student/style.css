@@ -2309,3 +2309,81 @@ a {
     display: none;
   }
 }
+
+/* feedback */
+/* ======================================================================== */
+/* ! --- FLOATING FEEDBACK CARD STYLES --- */
+/* ======================================================================== */
+
+.feedback-card {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100%;
+    max-width: 320px;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid var(--color-border);
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.feedback-card.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none; /* Prevents clicking when hidden */
+}
+
+.feedback-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.feedback-close-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.feedback-card-content i {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.75rem;
+}
+
+.feedback-card-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.feedback-card-content p {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+.feedback-card-content .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+}
+
+/* Responsive adjustments for the card on small screens */
+@media (max-width: 480px) {
+    .feedback-card {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        padding: 1.25rem;
+    }
+}

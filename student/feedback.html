@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback - CareerConnect</title>
+    <link rel="stylesheet" href="style.css" /> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Additional styles specific to the feedback page */
+        body {
+            background-color: var(--color-surface);
+        }
+
+        .feedback-container {
+            max-width: 700px;
+            margin: 3rem auto;
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .feedback-container h1 {
+            font-size: 2.25rem;
+            color: var(--color-text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .feedback-container p {
+            color: var(--color-text-secondary);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        #feedback-form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-border);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 2rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .star-rating i {
+            cursor: pointer;
+            transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        .star-rating i:hover {
+            transform: scale(1.15);
+        }
+
+        .star-rating i.selected,
+        .star-rating i.hovered {
+            color: var(--color-secondary);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--color-primary-700);
+        }
+
+        #success-message {
+            text-align: center;
+            padding: 2rem;
+            border: 2px solid var(--color-accent);
+            background-color: #f0fdf4;
+            border-radius: 1rem;
+        }
+
+        #success-message i {
+            font-size: 3rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+
+        #success-message h2 {
+            color: var(--color-text-primary);
+        }
+
+        #success-message p {
+            color: var(--color-text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .feedback-container {
+                margin: 1.5rem auto;
+                padding: 1.5rem;
+            }
+            .feedback-container h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="container nav-container">
+            <div class="logo-container">
+                <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z"/><path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white"/></svg>
+                <a href="index.html"><h1>CareerConnect</h1></a>
+            </div>
+             </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="feedback-container">
+                
+                <form id="feedback-form">
+                    <h1>Share Your Feedback</h1>
+                    <p>We value your opinion! Let us know how we can improve.</p>
+
+                    <div class="form-group">
+                        <label>How would you rate your overall experience?</label>
+                        <div class="star-rating" id="star-rating">
+                            <i class="fa-regular fa-star" data-value="1"></i>
+                            <i class="fa-regular fa-star" data-value="2"></i>
+                            <i class="fa-regular fa-star" data-value="3"></i>
+                            <i class="fa-regular fa-star" data-value="4"></i>
+                            <i class="fa-regular fa-star" data-value="5"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback-type">What is your feedback about?</label>
+                        <select id="feedback-type" name="feedback-type">
+                            <option value="General Comment">General Comment</option>
+                            <option value="Suggestion">Suggestion for Improvement</option>
+                            <option value="Bug Report">Bug Report</option>
+                            <option value="Aptitude Test">Aptitude Test</option>
+                            <option value="College Info">College Information</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback-message">Please share more details</label>
+                        <textarea id="feedback-message" name="feedback-message" rows="5" placeholder="Tell us what you think..." required></textarea>
+                    </div>
+
+                     <div class="form-group">
+                        <label for="feedback-name">Your Name (Optional)</label>
+                        <input type="text" id="feedback-name" name="feedback-name" placeholder="e.g., Ananya Singh">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback-email">Your Email (Optional)</label>
+                        <input type="email" id="feedback-email" name="feedback-email" placeholder="So we can follow up if needed">
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Submit Feedback
+                    </button>
+                </form>
+
+                <div id="success-message" style="display: none;">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <h2>Thank You!</h2>
+                    <p>Your feedback has been submitted successfully. We appreciate you taking the time to help us improve.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // --- Initialize Firebase ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBgCIj6tYPgP0aeN_dEx-0tmI_w7SqLtro",
+            authDomain: "careeradvisorhackathon.firebaseapp.com",
+            projectId: "careeradvisorhackathon",
+            storageBucket: "careeradvisorhackathon.appspot.com",
+            messagingSenderId: "1009234050196",
+            appId: "1:1009234050196:web:d273a45def922133180881"
+        };
+
+        let db;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+        } catch (e) {
+            console.error("Firebase initialization error:", e);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const starRatingContainer = document.getElementById('star-rating');
+            const stars = starRatingContainer.querySelectorAll('i');
+            const feedbackForm = document.getElementById('feedback-form');
+            const successMessage = document.getElementById('success-message');
+            let currentRating = 0;
+
+            // --- Star Rating Logic ---
+            stars.forEach(star => {
+                star.addEventListener('mouseover', () => {
+                    const ratingValue = parseInt(star.dataset.value);
+                    stars.forEach((s, index) => {
+                        s.classList.toggle('hovered', index < ratingValue);
+                        s.classList.toggle('fa-solid', index < ratingValue);
+                        s.classList.toggle('fa-regular', index >= ratingValue);
+                    });
+                });
+
+                star.addEventListener('mouseout', () => {
+                    stars.forEach((s, index) => {
+                        s.classList.remove('hovered');
+                        // Revert to the selected state
+                        s.classList.toggle('selected', index < currentRating);
+                        s.classList.toggle('fa-solid', index < currentRating);
+                        s.classList.toggle('fa-regular', index >= currentRating);
+                    });
+                });
+
+                star.addEventListener('click', () => {
+                    currentRating = parseInt(star.dataset.value);
+                    stars.forEach((s, index) => {
+                        s.classList.toggle('selected', index < currentRating);
+                    });
+                });
+            });
+
+            // --- Form Submission Logic ---
+            feedbackForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (!db) {
+                    alert("Database connection is not available. Please try again later.");
+                    return;
+                }
+                
+                const feedbackData = {
+                    rating: currentRating,
+                    type: feedbackForm.querySelector('#feedback-type').value,
+                    message: feedbackForm.querySelector('#feedback-message').value,
+                    name: feedbackForm.querySelector('#feedback-name').value || 'Anonymous',
+                    email: feedbackForm.querySelector('#feedback-email').value || 'N/A',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                // Save to Firestore
+                db.collection("feedback").add(feedbackData)
+                    .then(() => {
+                        console.log("Feedback submitted successfully!");
+                        feedbackForm.style.display = 'none';
+                        successMessage.style.display = 'block';
+                    })
+                    .catch((error) => {
+                        console.error("Error writing document: ", error);
+                        alert("There was an error submitting your feedback. Please try again.");
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

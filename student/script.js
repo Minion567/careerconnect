@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let careerMatchChart = null; // To hold the chart instance
 
     // --- DOM ELEMENT SELECTORS (ALL PAGES) ---
-    const userAuthSection = document.getElementById('user-auth-section');
     const pages = document.querySelectorAll('.page-content');
     const navLinks = document.querySelectorAll('#main-nav-links a');
     const hamburgerMenu = document.getElementById('hamburger-menu');
@@ -75,121 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatWindow = document.getElementById('chat-window');
 
     // --- STATIC DATA ---
-    // NOTE: SAMPLE_COLLEGES removed — application now relies solely on Firestore for colleges data.
     const questions = [
-        {
-            text: "When you have free time, you prefer to:",
-            options: [
-                { text: "Build or fix things", weights: { Vocational: 2, Science: 1 } },
-                { text: "Read a book or write", weights: { Arts: 2 } },
-                { text: "Organize your room or plan a budget", weights: { Commerce: 2 } },
-                { text: "Watch a documentary or solve puzzles", weights: { Science: 2 } }
-            ]
-        },
-        {
-            text: "Which subject do you enjoy most?",
-            options: [
-                { text: "Physics or Chemistry", weights: { Science: 2 } },
-                { text: "History or Literature", weights: { Arts: 2 } },
-                { text: "Mathematics or Economics", weights: { Commerce: 2, Science: 1 } },
-                { text: "Computer Science or a workshop class", weights: { Vocational: 2, Science: 1 } }
-            ]
-        },
-        {
-            text: "How do you prefer to solve a problem?",
-            options: [
-                { text: "By analyzing data logically", weights: { Science: 2, Commerce: 1 } },
-                { text: "By thinking creatively", weights: { Arts: 2 } },
-                { text: "By collaborating and managing", weights: { Commerce: 2 } },
-                { text: "By taking a hands-on approach", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "Which work environment sounds appealing?",
-            options: [
-                { text: "A laboratory or a tech company", weights: { Science: 2 } },
-                { text: "An art studio or a law firm", weights: { Arts: 2 } },
-                { text: "A bank or my own startup", weights: { Commerce: 2 } },
-                { text: "A workshop or working on-site", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "When tackling a big project, you most enjoy:",
-            options: [
-                { text: "Designing experiments and testing ideas", weights: { Science: 2 } },
-                { text: "Crafting the narrative or visuals", weights: { Arts: 2 } },
-                { text: "Planning the budget and timeline", weights: { Commerce: 2 } },
-                { text: "Building prototypes and practical solutions", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "Which of these activities energizes you the most?",
-            options: [
-                { text: "Solving logic puzzles or coding challenges", weights: { Science: 2 } },
-                { text: "Writing, performing, or designing", weights: { Arts: 2 } },
-                { text: "Negotiating or selling ideas", weights: { Commerce: 2 } },
-                { text: "Hands-on repair or craftsmanship", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "When choosing a career, your top priority is:",
-            options: [
-                { text: "Intellectual challenge and discovery", weights: { Science: 2 } },
-                { text: "Creative freedom and expression", weights: { Arts: 2 } },
-                { text: "Financial stability and growth", weights: { Commerce: 2 } },
-                { text: "Practical skills and independence", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "How do you prefer to learn new things?",
-            options: [
-                { text: "Through experiments and data", weights: { Science: 2 } },
-                { text: "By reading and reflecting", weights: { Arts: 2 } },
-                { text: "By watching case studies and examples", weights: { Commerce: 2 } },
-                { text: "By doing practical, hands-on work", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "Which of these problem types do you enjoy most?",
-            options: [
-                { text: "Technical puzzles or experiments", weights: { Science: 2 } },
-                { text: "Ambiguous, open-ended creative briefs", weights: { Arts: 2 } },
-                { text: "Business strategy and optimization", weights: { Commerce: 2 } },
-                { text: "Fixing machines or constructing things", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "What kind of team role do you prefer?",
-            options: [
-                { text: "Researcher / Analyst", weights: { Science: 2 } },
-                { text: "Creative lead / Storyteller", weights: { Arts: 2 } },
-                { text: "Manager / Coordinator", weights: { Commerce: 2 } },
-                { text: "Technician / Builder", weights: { Vocational: 2 } }
-            ]
-        },
-        {
-            text: "How comfortable are you with numbers and statistics?",
-            options: [
-                { text: "Very comfortable — I enjoy numbers", weights: { Science: 1, Commerce: 2 } },
-                { text: "I use them sometimes for research or art projects", weights: { Arts: 1, Science: 1 } },
-                { text: "I use them regularly for planning and finance", weights: { Commerce: 2 } },
-                { text: "I prefer practical measurements and hands-on metrics", weights: { Vocational: 1 } }
-            ]
-        },
-        {
-            text: "Which outcome matters most to you in a job?",
-            options: [
-                { text: "Contributing to scientific knowledge or tech innovation", weights: { Science: 2 } },
-                { text: "Creating meaningful art or stories", weights: { Arts: 2 } },
-                { text: "Driving business results and growth", weights: { Commerce: 2 } },
-                { text: "Making useful tangible products or services", weights: { Vocational: 2 } }
-            ]
-        }
+        // Your questions array remains here...
     ];
 
     // ===================================================================
     // ! --- ALL FUNCTIONS DEFINED HERE FIRST ---
     // ===================================================================
+<<<<<<< HEAD
 
     // Utility Functions
     function showModal(modal) { if (modal) modal.style.display = 'flex'; }
@@ -256,6 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
         }
     }
+=======
+    
+    // All your other functions like showModal, loadDashboardData, etc., remain here...
+>>>>>>> f990e014314f3b964222a468b63232dda6d386db
 
     // ===================================================================
     // ! --- MAIN APP LOGIC ---
@@ -277,20 +173,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+<<<<<<< HEAD
+=======
+    // --- Floating Feedback Card Logic ---
+    const feedbackCard = document.getElementById('feedback-card');
+    const closeFeedbackCardBtn = document.getElementById('close-feedback-card');
+
+    // Check if the card was already dismissed in this session
+    if (sessionStorage.getItem('feedbackCardDismissed') !== 'true') {
+        // Show the card after a 5-second delay
+        setTimeout(() => {
+            if (feedbackCard) {
+                feedbackCard.classList.remove('hidden');
+            }
+        }, 5000); // 5000 milliseconds = 5 seconds
+    }
+
+    // Logic to close the card
+    if (closeFeedbackCardBtn && feedbackCard) {
+        closeFeedbackCardBtn.addEventListener('click', () => {
+            feedbackCard.classList.add('hidden');
+            // Remember that the user closed it for this session
+            sessionStorage.setItem('feedbackCardDismissed', 'true');
+        });
+    }
+
+>>>>>>> f990e014314f3b964222a468b63232dda6d386db
     // Authentication
     auth.onAuthStateChanged(user => {
+        const authSections = document.querySelectorAll('.user-auth-section-desktop, .user-auth-section-mobile');
+
         if (user) {
             currentUser = { uid: user.uid, email: user.email };
             db.collection('users').doc(user.uid).get().then(doc => {
                 if (doc.exists) {
                     currentUser.name = doc.data().name;
-                    userAuthSection.innerHTML = `
+                    const loggedInHTML = `
                         <span id="user-display-name">Hi, ${currentUser.name.split(' ')[0]}</span>
-                        <button class="btn-outline-light" id="logout-btn">Logout</button>
+                        <button class="btn-outline-light logout-btn">Logout</button>
                     `;
-                    document.getElementById('logout-btn').addEventListener('click', () => {
-                        auth.signOut();
+                    authSections.forEach(section => section.innerHTML = loggedInHTML);
+                    
+                    document.querySelectorAll('.logout-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            auth.signOut();
+                        });
                     });
+
                     showPage('dashboard-content');
                 } else { auth.signOut(); }
             }).catch(err => {
@@ -299,13 +228,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             currentUser = null;
-            userAuthSection.innerHTML = `<button class="btn-primary" id="login-signup-btn-nav">Login / Signup</button>`;
-            const loginBtn = document.getElementById('login-signup-btn-nav');
-            if (loginBtn) loginBtn.addEventListener('click', () => showModal(authContainer));
+            const loggedOutHTML = `<button class="btn-primary login-signup-btn">Login / Signup</button>`;
+            authSections.forEach(section => section.innerHTML = loggedOutHTML);
+            
+            document.querySelectorAll('.login-signup-btn').forEach(btn => {
+                btn.addEventListener('click', () => showModal(authContainer));
+            });
+
             showPage('homepage-content');
         }
     });
 
+<<<<<<< HEAD
     function handleSignup(e) {
         e.preventDefault();
         const name = signupForm.querySelector('#signup-name').value;
@@ -1147,6 +1081,14 @@ async function generateAIResponse(userMessage) {
         });
     });
 
+=======
+    // ... The rest of your script.js file remains unchanged (handleSignup, handleLogin, Quiz Logic, etc.) ...
+    
+    // --- INITIAL LOAD ---
+    // Note: The automatic redirect timer from the previous request has been removed as this new UI element is a better approach.
+    // If you still want the redirect, you can add the setTimeout code back here.
+    
+>>>>>>> f990e014314f3b964222a468b63232dda6d386db
     loadCollegesFromFirestore();
     try { loadDynamicStats(); } catch (e) { console.error('Failed to start dynamic stats', e); }
     try { loadTestimonialsForHomepage(); } catch (e) { console.error('Failed to start testimonials listener', e); }
