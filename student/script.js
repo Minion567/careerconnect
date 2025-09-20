@@ -333,8 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(() => hideModal(authContainer))
             .catch(error => loginError.textContent = error.message);
     }
-
-    // Quiz Logic
     let currentQuestionIndex = 0;
     let scores = { Science: 0, Arts: 0, Commerce: 0, Vocational: 0 };
     function startQuiz() {
