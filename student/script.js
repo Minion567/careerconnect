@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================
     // ! --- ALL FUNCTIONS DEFINED HERE FIRST ---
     // ===================================================================
-<<<<<<< HEAD
 
     // Utility Functions
     function showModal(modal) { if (modal) modal.style.display = 'flex'; }
@@ -148,10 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
         }
     }
-=======
     
     // All your other functions like showModal, loadDashboardData, etc., remain here...
->>>>>>> f990e014314f3b964222a468b63232dda6d386db
 
     // ===================================================================
     // ! --- MAIN APP LOGIC ---
@@ -173,8 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-<<<<<<< HEAD
-=======
     // --- Floating Feedback Card Logic ---
     const feedbackCard = document.getElementById('feedback-card');
     const closeFeedbackCardBtn = document.getElementById('close-feedback-card');
@@ -198,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
->>>>>>> f990e014314f3b964222a468b63232dda6d386db
     // Authentication
     auth.onAuthStateChanged(user => {
         const authSections = document.querySelectorAll('.user-auth-section-desktop, .user-auth-section-mobile');
@@ -239,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-<<<<<<< HEAD
     function handleSignup(e) {
         e.preventDefault();
         const name = signupForm.querySelector('#signup-name').value;
@@ -1081,14 +1074,12 @@ async function generateAIResponse(userMessage) {
         });
     });
 
-=======
     // ... The rest of your script.js file remains unchanged (handleSignup, handleLogin, Quiz Logic, etc.) ...
     
     // --- INITIAL LOAD ---
     // Note: The automatic redirect timer from the previous request has been removed as this new UI element is a better approach.
     // If you still want the redirect, you can add the setTimeout code back here.
     
->>>>>>> f990e014314f3b964222a468b63232dda6d386db
     loadCollegesFromFirestore();
     try { loadDynamicStats(); } catch (e) { console.error('Failed to start dynamic stats', e); }
     try { loadTestimonialsForHomepage(); } catch (e) { console.error('Failed to start testimonials listener', e); }
