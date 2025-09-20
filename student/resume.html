@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resume Builder</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --blue-1:#2d6ca2;
+      --blue-2:#2980b9;
+      --muted:#7f8c8d;
+      --accent:#3498db;
+    }
+
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+
+    /* Layout */
+    body {
+      display:flex;
+      min-height:100vh;
+      gap:0;
+    }
+    .form-section {
+      width:50%;
+      box-sizing:border-box;
+      padding:22px;
+      background:#fff;
+      overflow:auto;
+      box-shadow:2px 0 8px rgba(0,0,0,.06);
+    }
+    .preview-wrap {
+      width:50%;
+      box-sizing:border-box;
+      padding:22px;
+      background:#f6f8fb;
+      overflow:auto;
+      border-left:2px solid #eee;
+    }
+
+    /* Controls */
+    h2{margin:0 0 12px 0;font-size:20px;color:#222}
+    input, textarea, select {
+      width:100%;
+      padding:8px 10px;
+      margin:8px 0;
+      border-radius:6px;
+      border:1px solid #dfe6ea;
+      box-sizing:border-box;
+      font-size:14px;
+    }
+    textarea{min-height:72px;resize:vertical}
+    label{font-size:13px;color:var(--muted)}
+    .controls-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    button{border:0;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:600}
+    .next{background:var(--accent);color:#fff}
+    .back{background:#95a5a6;color:#fff}
+    .download{background:#27ae60;color:#fff}
+    .add{background:#8e44ad;color:#fff}
+    .remove{background:#c0392b;color:#fff}
+
+    /* Style selector thumbnails */
+    .style-selector{display:flex;gap:10px;margin-bottom:12px}
+    .style-option{
+      width:120px;
+      font-size:13px;
+      text-align:center;
+      border-radius:8px;
+      border:2px solid transparent;
+      padding:6px;
+      cursor:pointer;
+      background:#fff;
+      box-shadow:0 1px 2px rgba(0,0,0,.04);
+    }
+    .style-option img{width:100%;height:70px;object-fit:cover;border-radius:6px;display:block;margin-bottom:6px}
+    .style-option.active{border-color:var(--accent);box-shadow:0 4px 12px rgba(52,152,219,.12)}
+
+    /* Steps */
+    .step{display:none}
+    .step.active{display:block}
+
+    /* ---------- RESUME PREVIEW - shared structure ---------- */
+    #resumePreview{
+      width:100%;
+      max-width:800px;
+      margin:0 auto;
+      background:#fff;
+      box-shadow:0 6px 20px rgba(0,0,0,.06);
+      border-radius:6px;
+      overflow:hidden;
+      box-sizing:border-box;
+      transition:all .18s ease;
+    }
+    /* internal layout (both columns) */
+    #resumePreview .resume-inner{display:grid;gap:18px;padding:26px;box-sizing:border-box}
+    #resumePreview .left-col, #resumePreview .right-col{box-sizing:border-box}
+    #resumePreview .profile-pic{width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid #fff;display:block}
+    #resumePreview h1{margin:0;font-size:26px;line-height:1.05}
+    #resumePreview h2{margin:6px 0 0;font-size:14px;font-weight:600}
+    #resumePreview p.meta{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .section{margin-top:14px}
+    .section h3{margin:0 0 8px;font-size:15px;font-weight:700}
+    .section p, .section li{font-size:13px;color:#333;margin:6px 0;line-height:1.35}
+
+    /* ------------- STYLE 1: Resumod-like (left sidebar dark) ------------- */
+    #resumePreview.style1 .resume-inner{
+      grid-template-columns:200px 1fr;
+      background:#fff;
+      padding:0;
+    }
+    #resumePreview.style1 .left-col{
+      background:linear-gradient(180deg,var(--blue-1),#1b4f76);
+      color:#fff;
+      padding:28px 18px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+      text-align:center;
+      min-height:100%;
+    }
+    #resumePreview.style1 .left-col .profile-pic{border-color:rgba(255,255,255,.9)}
+    #resumePreview.style1 h1{color:#fff;font-size:20px}
+    #resumePreview.style1 h2{color:rgba(255,255,255,.9);font-size:13px;font-weight:600}
+    #resumePreview.style1 p.meta{color:rgba(255,255,255,.85)}
+    #resumePreview.style1 .right-col{padding:26px 28px}
+    #resumePreview.style1 .section h3{color:var(--blue-1);border-bottom:1px solid #e6eef6;padding-bottom:6px}
+
+    /* ------------- STYLE 2: Minimalist Black & White ------------- */
+    #resumePreview.style2{background:#fff}
+    #resumePreview.style2 .resume-inner{
+      grid-template-columns:1fr;
+      padding:26px 28px;
+    }
+    #resumePreview.style2 .left-col{display:flex;align-items:center;gap:16px}
+    #resumePreview.style2 .profile-pic{width:86px;height:86px;border-radius:8px;object-fit:cover;border:2px solid #111}
+    #resumePreview.style2 h1{font-size:28px;letter-spacing:1px;text-transform:uppercase;color:#111}
+    #resumePreview.style2 h2{font-size:12px;color:#111;font-weight:500}
+    #resumePreview.style2 p.meta{color:#333}
+    #resumePreview.style2 .right-col{padding-top:18px;border-top:1px solid #e6e6e6}
+    #resumePreview.style2 .section{margin-top:12px}
+    #resumePreview.style2 .section h3{font-size:13px;color:#111;border-bottom:1px solid #000;padding-bottom:6px;text-transform:uppercase}
+
+    /* ------------- STYLE 3: Modern Blue (accent bar) ------------- */
+    /* Style 3 */
+#resumePreview.resume-style-3 {
+  font-family: "Calibri", sans-serif;
+  color: #333;
+  background: #fff;
+  padding: 30px;
+  border-left: 6px solid #2c3e50;
+}
+#resumePreview.resume-style-3 h1 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #2c3e50;
+  border-bottom: 2px solid #2c3e50;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+#resumePreview.resume-style-3 h2 {
+  font-size: 14px;
+  color: #555;
+  margin-top: 0;
+}
+#resumePreview.resume-style-3 .section h3 {
+  font-size: 16px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  color: #2c3e50;
+  border-bottom: 2px solid #2c3e50;
+  padding-bottom: 2px;
+}
+
+    /* small responsive adjustments */
+    @media (max-width:900px){
+      .form-section,.preview-wrap{width:100%;height:auto}
+      body{flex-direction:column}
+      #resumePreview.style1 .resume-inner{grid-template-columns:1fr}
+      #resumePreview.style1 .left-col{flex-direction:row;justify-content:flex-start;padding:18px}
+      #resumePreview.style1 .right-col{padding:18px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT: FORM -->
+  <div class="form-section">
+    <h2 id="formTitle">Contact Info</h2>
+
+    <!-- Visual style thumbnails -->
+    <label style="display:block;margin-bottom:6px">Choose Resume Style</label>
+    <div class="style-selector" id="styleSelector">
+      <div class="style-option" data-style="style1" onclick="selectStyle(this)">
+        <img src="https://resumod.co/uploads/image-1664861027812.jpg" alt="Style 1" />
+        Modern
+      </div>
+      <div class="style-option" data-style="style2" onclick="selectStyle(this)">
+        <img src="https://cms-assets.tutsplus.com/cdn-cgi/image/width=850/uploads/users/988/posts/93140/image-upload/canva_black_white_minimalist_cv_resume.jpg" alt="Style 2" />
+        Minimalist
+      </div>
+      <div class="style-option" data-style="style3" onclick="selectStyle(this)">
+        <img src="https://cdn-blog.novoresume.com/articles/relevant-coursework-on-resume/relevant-coursework-resume.webp" alt="Style 3" />
+        Classic
+      </div>
+    </div>
+
+    <!-- Step 0: Contact -->
+    <div class="step active" id="step0">
+      <input id="fname" placeholder="First Name">
+      <input id="lname" placeholder="Last Name">
+      <input id="city" placeholder="City">
+      <input id="postal" placeholder="Postal Code">
+      <input id="phone" placeholder="Phone">
+      <input id="email" placeholder="Email">
+      <label>Upload Photo:</label>
+      <input type="file" id="profilePicInput" accept="image/*">
+    </div>
+
+    <!-- Step 1: Experience -->
+    <div class="step" id="step1">
+      <div id="experienceFields"></div>
+      <button class="add" onclick="addExperience()">+ Add Experience</button>
+    </div>
+
+    <!-- Step 2: Education -->
+    <div class="step" id="step2">
+      <div id="educationFields"></div>
+      <button class="add" onclick="addEducation()">+ Add Education</button>
+    </div>
+
+    <!-- Step 3: Skills -->
+    <div class="step" id="step3">
+      <div id="skillsFields"></div>
+      <button class="add" onclick="addSkill()">+ Add Skill</button>
+    </div>
+
+    <!-- Step 4: About -->
+    <div class="step" id="step4">
+      <input id="aboutName" placeholder="Full Name (About)">
+      <input id="aboutFather" placeholder="Father's Name">
+      <textarea id="aboutHobbies" placeholder="Hobbies"></textarea>
+      <textarea id="aboutOther" placeholder="Other Details / Bio"></textarea>
+    </div>
+
+    <!-- Navigation -->
+    <div style="margin-top:12px">
+      <div class="controls-row">
+        <button class="back" onclick="prevStep()">Back</button>
+        <button class="next" onclick="nextStep()">Next</button>
+        <button class="download" onclick="downloadPDF()">Download as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="preview-wrap">
+    <div id="resumePreview" class="style1">
+      <div class="resume-inner">
+        <!-- left column (profile + brief) -->
+        <div class="left-col">
+          <img id="prevProfilePic" class="profile-pic" src="" alt="Profile Picture" style="display:none">
+          <div style="text-align:center">
+            <h1 id="prevName">Your Name</h1>
+            <h2 id="prevContact">Email | Phone</h2>
+            <p id="prevLocation" class="meta">City, Postal Code</p>
+          </div>
+        </div>
+
+        <!-- right column (content) -->
+        <div class="right-col">
+          <div class="section">
+            <h3>Experience</h3>
+            <div id="prevExperience">Your work experience will appear here.</div>
+          </div>
+
+          <div class="section">
+            <h3>Education</h3>
+            <div id="prevEducation">Your education will appear here.</div>
+          </div>
+
+          <div class="section">
+            <h3>Skills</h3>
+            <ul id="prevSkills"><li>Your skills will appear here.</li></ul>
+          </div>
+
+          <div class="section">
+            <h3>About Me</h3>
+            <p><b>Name:</b> <span id="prevAboutName">-</span></p>
+            <p><b>Father's Name:</b> <span id="prevAboutFather">-</span></p>
+            <p><b>Hobbies:</b> <span id="prevAboutHobbies">-</span></p>
+            <p id="prevAboutOther">Your short bio will appear here.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+  <script>
+    // Steps
+    let currentStep = 0;
+    const steps = document.querySelectorAll('.step');
+    const titles = ['Contact Info','Experience','Education','Skills','About'];
+
+    function showStep(n){
+      steps.forEach((s,i)=> s.classList.toggle('active', i===n));
+      document.getElementById('formTitle').innerText = titles[n];
+    }
+    function nextStep(){ if(currentStep < steps.length -1) currentStep++; showStep(currentStep); updatePreview();}
+    function prevStep(){ if(currentStep>0) currentStep--; showStep(currentStep); updatePreview(); }
+
+    // Add fields
+    function addExperience(){
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input placeholder="Job Title" class="expTitle">
+        <input placeholder="Company" class="expCompany">
+        <input placeholder="Years (e.g. 2020-2023)" class="expYears">
+        <textarea placeholder="Description" class="expDesc"></textarea>
+        <div style="display:flex;justify-content:flex-end"><button class="remove" onclick="this.closest('div').remove(); updatePreview()">Remove</button></div>
+        <hr>`;
+      document.getElementById('experienceFields').appendChild(div);
+    }
+
+    function addEducation(){
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input placeholder="Degree / Course" class="eduDegree">
+        <input placeholder="Institution" class="eduInstitution">
+        <input placeholder="Years (e.g. 2018-2022)" class="eduYears">
+        <div style="display:flex;justify-content:flex-end"><button class="remove" onclick="this.closest('div').remove(); updatePreview()">Remove</button></div>
+        <hr>`;
+      document.getElementById('educationFields').appendChild(div);
+    }
+
+    function addSkill(){
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input placeholder="Skill" class="skillName">
+        <div style="display:flex;justify-content:flex-end"><button class="remove" onclick="this.closest('div').remove(); updatePreview()">Remove</button></div>
+        <hr>`;
+      document.getElementById('skillsFields').appendChild(div);
+    }
+
+    // Profile upload
+    document.getElementById('profilePicInput').addEventListener('change', function(e){
+      const f = e.target.files && e.target.files[0];
+      if(!f) return;
+      const rdr = new FileReader();
+      rdr.onload = function(ev){
+        const img = document.getElementById('prevProfilePic');
+        img.src = ev.target.result;
+        img.style.display = 'block';
+      }
+      rdr.readAsDataURL(f);
+    });
+
+    // Update preview contents
+    function updatePreview(){
+      const fname = document.getElementById('fname').value || '';
+      const lname = document.getElementById('lname').value || '';
+      const city = document.getElementById('city').value || '';
+      const postal = document.getElementById('postal').value || '';
+      const phone = document.getElementById('phone').value || '';
+      const email = document.getElementById('email').value || '';
+
+      document.getElementById('prevName').innerText = (fname + ' ' + lname).trim() || 'Your Name';
+      document.getElementById('prevContact').innerText = (email || '') + (email && phone ? ' | ' : '') + (phone || '');
+      document.getElementById('prevLocation').innerText = city + (postal ? ', ' + postal : '');
+
+      // Experience
+      let expHtml = '';
+      document.querySelectorAll('#experienceFields > div').forEach(div=>{
+        const title = (div.querySelector('.expTitle') || {value:''}).value;
+        const company = (div.querySelector('.expCompany') || {value:''}).value;
+        const years = (div.querySelector('.expYears') || {value:''}).value;
+        const desc = (div.querySelector('.expDesc') || {value:''}).value;
+        if(title||company||years||desc){
+          expHtml += `<p><strong>${escapeHtml(title)}</strong>${company ? ' — ' + escapeHtml(company) : ''}${years ? ' <span style="color:var(--muted)">(' + escapeHtml(years) + ')</span>' : ''}<br>${escapeHtml(desc)}</p>`;
+        }
+      });
+      document.getElementById('prevExperience').innerHTML = expHtml || 'Your work experience will appear here.';
+
+      // Education
+      let eduHtml = '';
+      document.querySelectorAll('#educationFields > div').forEach(div=>{
+        const degree = (div.querySelector('.eduDegree') || {value:''}).value;
+        const inst = (div.querySelector('.eduInstitution') || {value:''}).value;
+        const years = (div.querySelector('.eduYears') || {value:''}).value;
+        if(degree||inst||years){
+          eduHtml += `<p><strong>${escapeHtml(degree)}</strong>${inst ? ' — ' + escapeHtml(inst) : ''}${years ? ' <span style="color:var(--muted)">(' + escapeHtml(years) + ')</span>' : ''}</p>`;
+        }
+      });
+      document.getElementById('prevEducation').innerHTML = eduHtml || 'Your education will appear here.';
+
+      // Skills
+      let skills = '';
+      document.querySelectorAll('#skillsFields > div').forEach(div=>{
+        const s = (div.querySelector('.skillName') || {value:''}).value;
+        if(s && s.trim()) skills += `<li>${escapeHtml(s.trim())}</li>`;
+      });
+      document.getElementById('prevSkills').innerHTML = skills || '<li>Your skills will appear here.</li>';
+
+      // About
+      document.getElementById('prevAboutName').innerText = document.getElementById('aboutName').value || '-';
+      document.getElementById('prevAboutFather').innerText = document.getElementById('aboutFather').value || '-';
+      document.getElementById('prevAboutHobbies').innerText = document.getElementById('aboutHobbies').value || '-';
+      document.getElementById('prevAboutOther').innerText = document.getElementById('aboutOther').value || 'Your short bio will appear here.';
+    }
+
+    // small HTML escape to avoid accidental markup injection
+    function escapeHtml(str){
+      if(!str) return '';
+      return String(str).replace(/[&<>"']/g, function(m){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+      });
+    }
+
+    // Live update
+    document.addEventListener('input', updatePreview);
+
+    // Style selection (thumbnails)
+    function selectStyle(el){
+      const style = el.dataset.style;
+      const resume = document.getElementById('resumePreview');
+      // remove any style classes then add
+      resume.classList.remove('style1','style2','style3');
+      resume.classList.add(style);
+
+      // mark active thumb
+      document.querySelectorAll('.style-option').forEach(o=>o.classList.remove('active'));
+      el.classList.add('active');
+
+      // ensure preview reflow
+      updatePreview();
+    }
+
+    // initial select first thumb
+    (function init(){
+      const first = document.querySelector('.style-option[data-style="style1"]');
+      if(first) first.classList.add('active');
+      document.getElementById('resumePreview').classList.add('style1');
+      updatePreview();
+    })();
+
+    // PDF download
+    function downloadPDF(){
+      const resume = document.getElementById('resumePreview');
+      // temporarily enlarge for better print fidelity
+      const opt = {
+        margin: 0.4,
+        filename: 'My_Resume.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().from(resume).set(opt).save();
+    }
+  </script>
+</body>
+</html>
