@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CareerConnect - Your Future Starts Here</title>
-    <link rel="stylesheet" href="style.css" /> 
+    <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <nav class="main-nav">
         <div class="container nav-container">
             <div class="logo-container">
-                <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z"/><path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white"/></svg>
-                <a href="#" onclick="showPage('homepage-content')"><h1>CareerConnect</h1></a>
+                <svg viewBox="0 0 32 32" fill="currentColor">
+                    <path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z" />
+                    <path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white" />
+                </svg>
+                <a href="#" onclick="showPage('homepage-content')">
+                    <h1>CareerConnect</h1>
+                </a>
             </div>
             <div class="nav-links" id="main-nav-links">
                 <a onclick="showPage('homepage-content')" data-page="homepage-content" class="active">Home</a>
@@ -25,7 +32,7 @@
                 <a href="resume.html" target="_blank">Resume Builder</a>
             </div>
             <div id="user-auth-section">
-                 <button class="btn-primary" id="login-signup-btn">Login / Signup</button>
+                <button class="btn-primary" id="login-signup-btn">Login / Signup</button>
             </div>
             <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu">
                 <i class="fas fa-bars"></i>
@@ -39,49 +46,92 @@
                 <div class="container grid-container">
                     <div class="hero-content">
                         <h1>Your Future Starts with <span class="text-gradient">Understanding Yourself</span></h1>
-                        <p>Discover your strengths, explore career paths, and find the perfect college with our AI-powered career guidance platform. Transform confusion into clarity with personalized recommendations.</p>
+                        <p>Discover your strengths, explore career paths, and find the perfect college with our
+                            AI-powered career guidance platform. Transform confusion into clarity with personalized
+                            recommendations.</p>
                         <div class="hero-buttons">
-                            <button class="btn-secondary" id="start-quiz-btn-hero"><i class="fa-solid fa-rocket" style="margin-right: 8px;"></i>Take Free Aptitude Test</button>
-                            <a href="#" onclick="showPage('career-explorer-content')" class="btn-outline" style="border-color: var(--color-primary); color: var(--color-primary);"><i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i>Explore Careers</a>
+                            <button class="btn-secondary" id="start-quiz-btn-hero"><i class="fa-solid fa-rocket"
+                                    style="margin-right: 8px;"></i>Take Free Aptitude Test</button>
+                            <a href="#" onclick="showPage('career-explorer-content')" class="btn-outline"
+                                style="border-color: var(--color-primary); color: var(--color-primary);"><i
+                                    class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i>Explore
+                                Careers</a>
                         </div>
                     </div>
                     <div class="hero-image-container">
-                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" alt="Students collaborating" class="hero-image" />
-                        <div class="ai-badge"><div class="pulse"></div><span style="font-size: 0.875rem; font-weight: 600;">AI Powered</span></div>
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
+                            alt="Students collaborating" class="hero-image" />
+                        <div class="ai-badge">
+                            <div class="pulse"></div><span style="font-size: 0.875rem; font-weight: 600;">AI
+                                Powered</span>
+                        </div>
                     </div>
                 </div>
             </section>
             <section class="stats-section">
                 <div class="container grid-container">
-                    <div class="stat-item"><div class="stat-number" id="students-count">0</div><div class="stat-label">Students Guided</div></div>
-                    <div class="stat-item"><div class="stat-number" id="careers-count">0</div><div class="stat-label">Career Paths Explored</div></div>
-                    <div class="stat-item"><div class="stat-number" id="colleges-count">0</div><div class="stat-label">Colleges Connected</div></div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="students-count">0</div>
+                        <div class="stat-label">Students Guided</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="careers-count">0</div>
+                        <div class="stat-label">Career Paths Explored</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="colleges-count">0</div>
+                        <div class="stat-label">Colleges Connected</div>
+                    </div>
                 </div>
             </section>
             <section class="journey-section" id="journey">
                 <div class="container">
                     <div class="section-title">
                         <h2>Your Journey to Career Clarity</h2>
-                        <p>Follow our proven three-step process to discover your ideal career path and find the perfect college match.</p>
+                        <p>Follow our proven three-step process to discover your ideal career path and find the perfect
+                            college match.</p>
                     </div>
                     <div class="steps-container">
                         <a href="#" onclick="showPage('assessment-content')">
-                        <div class="step-card">
-                            <div class="step-icon-wrapper"><div class="step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div></div>
-                            <h3>Discover Your Strengths</h3><p>Take our comprehensive aptitude assessment to uncover your natural talents, interests, and learning preferences.</p>
-                        </div>
-                    </a>
-                    <a href="#" onclick="showPage('career-explorer-content')">
-                        <div class="step-card">
-                            <div class="step-icon-wrapper"><div class="step-icon" style="background-color: orangered;"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div></div>
-                            <h3>Explore Career Paths</h3><p>Get personalized career recommendations based on your assessment results, including growth prospects and requirements.</p>
-                        </div>
+                            <div class="step-card">
+                                <div class="step-icon-wrapper">
+                                    <div class="step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                        </svg></div>
+                                </div>
+                                <h3>Discover Your Strengths</h3>
+                                <p>Take our comprehensive aptitude assessment to uncover your natural talents,
+                                    interests, and learning preferences.</p>
+                            </div>
+                        </a>
+                        <a href="#" onclick="showPage('career-explorer-content')">
+                            <div class="step-card">
+                                <div class="step-icon-wrapper">
+                                    <div class="step-icon" style="background-color: orangered;"><svg fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        </svg></div>
+                                </div>
+                                <h3>Explore Career Paths</h3>
+                                <p>Get personalized career recommendations based on your assessment results, including
+                                    growth prospects and requirements.</p>
+                            </div>
                         </a>
                         <a href="#" onclick="showPage('colleges-content')">
-                        <div class="step-card">
-                            <div class="step-icon-wrapper"><div class="step-icon" style="background-color:rgb(19, 171, 19);"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div></div>
-                            <h3>Find Your College</h3><p>Discover colleges that align with your career goals, location preferences, and academic requirements.</p>
-                        </div>
+                            <div class="step-card">
+                                <div class="step-icon-wrapper">
+                                    <div class="step-icon" style="background-color:rgb(19, 171, 19);"><svg fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg></div>
+                                </div>
+                                <h3>Find Your College</h3>
+                                <p>Discover colleges that align with your career goals, location preferences, and
+                                    academic requirements.</p>
+                            </div>
                         </a>
                     </div>
                 </div>
@@ -90,64 +140,97 @@
                 <div class="container">
                     <div class="section-title">
                         <h2>Success Stories from Our Students</h2>
-                        <p>Real transformations from confusion to clarity. See how CareerConnect helped students find their perfect career path.</p>
+                        <p>Real transformations from confusion to clarity. See how CareerConnect helped students find
+                            their perfect career path.</p>
                     </div>
                     <div class="carousel-wrapper">
                         <div class="carousel-overflow">
                             <div class="carousel-container" id="carousel-container">
-                                 <div class="carousel-slide">
-                                  <div class="card story-card">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" class="story-image" alt="Arjun Sharma">
-                                    <div>
-                                      <div class="story-rating">
-                                        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> (x5)
-                                      </div>
-                                      <blockquote>"I was completely confused... CareerConnect's test revealed my logical thinking strengths... Now I'm a Software Engineer at a top MNC!"</blockquote>
-                                      <div class="student-name">Arjun Sharma</div>
+                                <div class="carousel-slide">
+                                    <div class="card story-card">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
+                                            class="story-image" alt="Arjun Sharma">
+                                        <div>
+                                            <div class="story-rating">
+                                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg> (x5)
+                                            </div>
+                                            <blockquote>"I was completely confused... CareerConnect's test revealed my
+                                                logical thinking strengths... Now I'm a Software Engineer at a top MNC!"
+                                            </blockquote>
+                                            <div class="student-name">Arjun Sharma</div>
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
                                 <div class="carousel-slide">
-                                  <div class="card story-card">
-                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="story-image" alt="Priya Patel">
-                                    <div>
-                                      <div class="story-rating">
-                                        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> (x5)
-                                      </div>
-                                      <blockquote>"The platform helped me understand my empathy and analytical skills were perfect for medicine. I'm now pursuing my MBBS with confidence!"</blockquote>
-                                      <div class="student-name">Priya Patel</div>
+                                    <div class="card story-card">
+                                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                            class="story-image" alt="Priya Patel">
+                                        <div>
+                                            <div class="story-rating">
+                                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg> (x5)
+                                            </div>
+                                            <blockquote>"The platform helped me understand my empathy and analytical
+                                                skills were perfect for medicine. I'm now pursuing my MBBS with
+                                                confidence!"</blockquote>
+                                            <div class="student-name">Priya Patel</div>
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
                                 <div class="carousel-slide">
-                                  <div class="card story-card">
-                                    <img src="https://plus.unsplash.com/premium_photo-1678197937465-bdbc4ed95815?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="story-image" alt="Rohan Verma">
-                                    <div>
-                                      <div class="story-rating">
-                                        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> (x5)
-                                      </div>
-                                      <blockquote>"CareerConnect helped me discover my creativity and eye for detail. Today, I'm thriving as a Graphic Designer in a leading startup."</blockquote>
-                                      <div class="student-name">Rohan Verma</div>
+                                    <div class="card story-card">
+                                        <img src="https://plus.unsplash.com/premium_photo-1678197937465-bdbc4ed95815?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                            class="story-image" alt="Rohan Verma">
+                                        <div>
+                                            <div class="story-rating">
+                                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg> (x5)
+                                            </div>
+                                            <blockquote>"CareerConnect helped me discover my creativity and eye for
+                                                detail. Today, I'm thriving as a Graphic Designer in a leading startup."
+                                            </blockquote>
+                                            <div class="student-name">Rohan Verma</div>
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
                                 <div class="carousel-slide">
-                                  <div class="card story-card">
-                                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1974&auto=format&fit=crop" class="story-image" alt="Ananya Singh">
-                                    <div>
-                                      <div class="story-rating">
-                                        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> (x5)
-                                      </div>
-                                      <blockquote>"I discovered my problem-solving skills matched perfectly with finance. Thanks to CareerConnect, I’m now a Chartered Accountant in training."</blockquote>
-                                      <div class="student-name">Ananya Singh</div>
+                                    <div class="card story-card">
+                                        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1974&auto=format&fit=crop"
+                                            class="story-image" alt="Ananya Singh">
+                                        <div>
+                                            <div class="story-rating">
+                                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg> (x5)
+                                            </div>
+                                            <blockquote>"I discovered my problem-solving skills matched perfectly with
+                                                finance. Thanks to CareerConnect, I’m now a Chartered Accountant in
+                                                training."</blockquote>
+                                            <div class="student-name">Ananya Singh</div>
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
                             </div>
                         </div>
                         <div class="carousel-controls">
-                            <button class="control-btn" onclick="previousSlide()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-                            <button class="control-btn" onclick="nextSlide()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+                            <button class="control-btn" onclick="previousSlide()"><svg fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg></button>
+                            <button class="control-btn" onclick="nextSlide()"><svg fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg></button>
                         </div>
                         <div class="carousel-indicators" id="carousel-indicators"></div>
                     </div>
@@ -157,36 +240,76 @@
                 <div class="container grid-container">
                     <div>
                         <h2>Get Personalized Guidance with Our AI Counselor</h2>
-                        <p>Available 24/7 to answer your career questions, provide personalized advice, and guide you through important decisions.</p>
+                        <p>Available 24/7 to answer your career questions, provide personalized advice, and guide you
+                            through important decisions.</p>
                         <div class="feature-list">
-                            <div class="feature-item"><div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div><span>Instant responses to career questions</span></div>
-                            <div class="feature-item"><div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div><span>Personalized based on your assessment</span></div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg></div><span>Instant responses to career questions</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg></div><span>Personalized based on your assessment</span>
+                            </div>
                         </div>
-                        <a href="#" onclick="showPage('ai-counselor-content')" class="btn-primary">Start Chatting Now</a>
+                        <a href="#" onclick="showPage('ai-counselor-content')" class="btn-primary">Start Chatting
+                            Now</a>
                     </div>
                     <div class="chat-preview-card">
-                        <div class="chat-header"><div class="chat-avatar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div><div><h3>AI Career Counselor</h3><span>Online</span></div></div>
+                        <div class="chat-header">
+                            <div class="chat-avatar"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg></div>
+                            <div>
+                                <h3>AI Career Counselor</h3><span>Online</span>
+                            </div>
+                        </div>
                         <div class="chat-messages">
                             <div class="chat-bubble ai-msg">Hi! What would you like to know?</div>
                             <div class="chat-bubble user-msg">Should I choose engineering or medicine?</div>
-                            <div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+                            <div class="typing-indicator">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
             <section class="discover-colleges-section" id="colleges">
                 <div class="container">
-                     <div class="section-title">
+                    <div class="section-title">
                         <h2>Discover Colleges Across India</h2>
-                        <p>Explore over 1,200+ colleges with detailed information, location-based search, and personalized recommendations based on your career goals.</p>
+                        <p>Explore over 1,200+ colleges with detailed information, location-based search, and
+                            personalized recommendations based on your career goals.</p>
                     </div>
-                     <div class="grid-container">
+                    <div class="grid-container">
                         <div class="map-preview">
-                            <svg viewBox="0 0 400 300" class="map-svg"><path d="M100 50 L300 50 L350 100 L320 200 L250 250 L150 240 L80 180 L100 50 Z" fill="currentColor"/></svg>
-                            <div class="map-pin delhi"><div class="pin-dot"></div><div class="pin-label">Delhi</div></div>
-                            <div class="map-pin kolkata"><div class="pin-dot"></div><div class="pin-label">Kolkata</div></div>
-                            <div class="map-pin mumbai"><div class="pin-dot"></div><div class="pin-label">Mumbai</div></div>
-                            <div class="map-pin bangalore"><div class="pin-dot"></div><div class="pin-label">Bangalore</div></div>
+                            <svg viewBox="0 0 400 300" class="map-svg">
+                                <path d="M100 50 L300 50 L350 100 L320 200 L250 250 L150 240 L80 180 L100 50 Z"
+                                    fill="currentColor" />
+                            </svg>
+                            <div class="map-pin delhi">
+                                <div class="pin-dot"></div>
+                                <div class="pin-label">Delhi</div>
+                            </div>
+                            <div class="map-pin kolkata">
+                                <div class="pin-dot"></div>
+                                <div class="pin-label">Kolkata</div>
+                            </div>
+                            <div class="map-pin mumbai">
+                                <div class="pin-dot"></div>
+                                <div class="pin-label">Mumbai</div>
+                            </div>
+                            <div class="map-pin bangalore">
+                                <div class="pin-dot"></div>
+                                <div class="pin-label">Bangalore</div>
+                            </div>
                             <div class="map-search-box">
                                 <i class="fas fa-search" style="color: var(--color-text-muted);"></i>
                                 <input type="text" placeholder="Search colleges near you...">
@@ -196,19 +319,46 @@
                         <div>
                             <div class="features-list">
                                 <div class="feature-item">
-                                    <div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
-                                    <div><h3>Location-Based Search</h3><p>Find colleges near your location with distance calculations and travel information.</p></div>
+                                    <div class="feature-icon"><svg fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg></div>
+                                    <div>
+                                        <h3>Location-Based Search</h3>
+                                        <p>Find colleges near your location with distance calculations and travel
+                                            information.</p>
+                                    </div>
                                 </div>
                                 <div class="feature-item">
-                                    <div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
-                                    <div><h3>Detailed Profiles</h3><p>Comprehensive information including courses, fees, placements, and student reviews.</p></div>
+                                    <div class="feature-icon"><svg fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg></div>
+                                    <div>
+                                        <h3>Detailed Profiles</h3>
+                                        <p>Comprehensive information including courses, fees, placements, and student
+                                            reviews.</p>
+                                    </div>
                                 </div>
                                 <div class="feature-item">
-                                    <div class="feature-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
-                                    <div><h3>Smart Recommendations</h3><p>Get personalized college suggestions based on your aptitude results and career goals.</p></div>
+                                    <div class="feature-icon"><svg fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg></div>
+                                    <div>
+                                        <h3>Smart Recommendations</h3>
+                                        <p>Get personalized college suggestions based on your aptitude results and
+                                            career goals.</p>
+                                    </div>
                                 </div>
                             </div>
-                            <a href="#" onclick="showPage('colleges-content')" class="btn-primary">Explore College Directory</a>
+                            <a href="#" onclick="showPage('colleges-content')" class="btn-primary">Explore College
+                                Directory</a>
                         </div>
                     </div>
                 </div>
@@ -220,20 +370,62 @@
                         <p>Partnered with leading educational institutions and government exam preparation resources</p>
                     </div>
                     <div class="logos-container">
-                        <div class="logo-card"><div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z"/></svg></div><div><div class="logo-title">CBSE</div><div class="logo-subtitle">Certified</div></div></div>
-                        <div class="logo-card"><div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div><div><div class="logo-title">UGC</div><div class="logo-subtitle">Recognized</div></div></div>
-                        <div class="logo-card"><div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div><div class="logo-title">AICTE</div><div class="logo-subtitle">Approved</div></div></div>
-                        <div class="logo-card"><div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg></div><div><div class="logo-title">NCERT</div><div class="logo-subtitle">Aligned</div></div></div>
+                        <div class="logo-card">
+                            <div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z" />
+                                </svg></div>
+                            <div>
+                                <div class="logo-title">CBSE</div>
+                                <div class="logo-subtitle">Certified</div>
+                            </div>
+                        </div>
+                        <div class="logo-card">
+                            <div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                                </svg></div>
+                            <div>
+                                <div class="logo-title">UGC</div>
+                                <div class="logo-subtitle">Recognized</div>
+                            </div>
+                        </div>
+                        <div class="logo-card">
+                            <div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg></div>
+                            <div>
+                                <div class="logo-title">AICTE</div>
+                                <div class="logo-subtitle">Approved</div>
+                            </div>
+                        </div>
+                        <div class="logo-card">
+                            <div class="logo-icon"><svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
+                                </svg></div>
+                            <div>
+                                <div class="logo-title">NCERT</div>
+                                <div class="logo-subtitle">Aligned</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="trust-badge"><div class="trust-badge-inner"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Includes JEE, NEET, UPSC & 50+ Government Exam Resources</span></div></div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-inner"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg><span>Includes JEE, NEET, UPSC & 50+ Government Exam Resources</span></div>
+                    </div>
                 </div>
             </section>
             <section class="cta-section">
                 <div class="container cta-content">
                     <h2>Ready to Discover Your Perfect Career Path?</h2>
-                    <p>Join thousands of students who have found clarity and confidence in their career choices. Start your journey today with our free aptitude assessment.</p>
+                    <p>Join thousands of students who have found clarity and confidence in their career choices. Start
+                        your journey today with our free aptitude assessment.</p>
                     <div class="cta-buttons">
-                        <a href="#" onclick="showPage('assessment-content')" class="btn-secondary">Start Free Assessment</a>
+                        <a href="#" onclick="showPage('assessment-content')" class="btn-secondary">Start Free
+                            Assessment</a>
                         <a href="#" onclick="showPage('dashboard-content')" class="btn-outline">View Dashboard</a>
                     </div>
                 </div>
@@ -244,15 +436,26 @@
             <section class="career-hero">
                 <div class="container">
                     <h1>Explore <span class="text-gradient">180+ Career Paths</span> Tailored for You</h1>
-                    <p>Discover careers through interactive exploration, real professional stories, and data-driven insights. From traditional paths to emerging opportunities, find your perfect match.</p>
+                    <p>Discover careers through interactive exploration, real professional stories, and data-driven
+                        insights. From traditional paths to emerging opportunities, find your perfect match.</p>
                     <div class="stats-container">
-                        <div class="stat-box" id="students-count-career"><div class="number">180+</div><div class="label">Career Paths</div></div>
-                        <div class="stat-box" id="careers-count-career"><div class="number">50+</div><div class="label">Government Jobs</div></div>
-                        <div class="stat-box" id="colleges-count-career"><div class="number">25+</div><div class="label">Emerging Fields</div></div>
+                        <div class="stat-box" id="students-count-career">
+                            <div class="number">180+</div>
+                            <div class="label">Career Paths</div>
+                        </div>
+                        <div class="stat-box" id="careers-count-career">
+                            <div class="number">50+</div>
+                            <div class="label">Government Jobs</div>
+                        </div>
+                        <div class="stat-box" id="colleges-count-career">
+                            <div class="number">25+</div>
+                            <div class="label">Emerging Fields</div>
+                        </div>
                     </div>
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search careers by name, skills, or interests..." id="career-search-input">
+                        <input type="text" placeholder="Search careers by name, skills, or interests..."
+                            id="career-search-input">
                     </div>
                 </div>
             </section>
@@ -271,40 +474,200 @@
                 <div class="container">
                     <div class="grid-container" id="career-grid-container">
                         <div class="career-card" data-category="technology">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298748/7bf181e0-6ba2-4c0d-9ef2-2559e4479f9d.png" alt="Software Engineer" class="career-image"><div class="match-tag">95% Match</div></div>
-                            <div class="content"><h3>Software Engineer</h3><p class="description">Design and develop software applications and systems.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹4-25 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">B.Tech/BE</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298748/7bf181e0-6ba2-4c0d-9ef2-2559e4479f9d.png"
+                                    alt="Software Engineer" class="career-image">
+                                <div class="match-tag">95% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>Software Engineer</h3>
+                                <p class="description">Design and develop software applications and systems.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹4-25 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">B.Tech/BE</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="creative">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298801/29ec374c-4ee6-4fac-a5d7-e580c425ffeb.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div></div>
-                            <div class="content"><h3>Graphic Designer</h3><p class="description">Create visual concepts, by hand or with computer software, to communicate ideas that inspire, inform, or captivate consumers.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹3-8 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">B.Des/BFA or Diploma</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298801/29ec374c-4ee6-4fac-a5d7-e580c425ffeb.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>Graphic Designer</h3>
+                                <p class="description">Create visual concepts, by hand or with computer software, to
+                                    communicate ideas that inspire, inform, or captivate consumers.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹3-8 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">B.Des/BFA or Diploma</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="healthcare">
-                            <div class="image-wrapper"><img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=2070" alt="Doctor" class="career-image"><div class="match-tag" style="background-color: var(--color-accent);">88% Match</div></div>
-                            <div class="content"><h3>Medical Doctor</h3><p class="description">Diagnose and treat illnesses and health conditions.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹6-50 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">MBBS + MD</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=2070"
+                                    alt="Doctor" class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-accent);">88% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>Medical Doctor</h3>
+                                <p class="description">Diagnose and treat illnesses and health conditions.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹6-50 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">MBBS + MD</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="government">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298845/4472c9d3-cc84-427f-8c93-fc137552c643.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div></div>
-                            <div class="content"><h3>IAS Officer</h3><p class="description">Lead administrative functions and implement government policies.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹8-30 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">Any Graduate</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298845/4472c9d3-cc84-427f-8c93-fc137552c643.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>IAS Officer</h3>
+                                <p class="description">Lead administrative functions and implement government policies.
+                                </p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹8-30 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">Any Graduate</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="healthcare">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300794/ae31f8c5-6b34-466b-84db-9f97d945ce0a.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div></div>
-                            <div class="content"><h3>Physiotherapist</h3><p class="description">Help patients manage pain and improve mobility through physical exercises, massage, and therapeutic techniques.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹3-8 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">BPT (Bachelor of Physiotherapy)</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300794/ae31f8c5-6b34-466b-84db-9f97d945ce0a.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>Physiotherapist</h3>
+                                <p class="description">Help patients manage pain and improve mobility through physical
+                                    exercises, massage, and therapeutic techniques.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹3-8 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">BPT (Bachelor of Physiotherapy)</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="creative">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298585/1d67c904-6d03-47c3-92ca-bd4952f1882c.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div></div>
-                            <div class="content"><h3>UX/UI Designer</h3><p class="description">Design user interfaces and ensure an optimal user experience for websites, apps, and software.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹5-15 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">B.Des/B.Tech or Certification</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298585/1d67c904-6d03-47c3-92ca-bd4952f1882c.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">92% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>UX/UI Designer</h3>
+                                <p class="description">Design user interfaces and ensure an optimal user experience for
+                                    websites, apps, and software.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹5-15 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">B.Des/B.Tech or Certification</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="technology">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300320/b288bf5e-4e79-4357-a6f6-776a9ee8a152.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">80% Match</div></div>
-                            <div class="content"><h3>DevOps Engineer</h3><p class="description">Bridge the gap between software development and IT operations to ensure fast, reliable deployment and infrastructure management.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹6-12 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">B.Tech/M.Tech. in Computer Science</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300320/b288bf5e-4e79-4357-a6f6-776a9ee8a152.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">80% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>DevOps Engineer</h3>
+                                <p class="description">Bridge the gap between software development and IT operations to
+                                    ensure fast, reliable deployment and infrastructure management.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹6-12 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">B.Tech/M.Tech. in Computer Science</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="government">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300561/e5989fbe-9e76-46f4-93b9-32538b0eba8d.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">80% Match</div></div>
-                            <div class="content"><h3>Indian Forest Service (IFS)</h3><p class="description">Manage and protect the nation's forests, wildlife, and environmental resources.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹8-30 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">Bachelor's in Science(UPSC Exam)</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300561/e5989fbe-9e76-46f4-93b9-32538b0eba8d.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">80% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>Indian Forest Service (IFS)</h3>
+                                <p class="description">Manage and protect the nation's forests, wildlife, and
+                                    environmental resources.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹8-30 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">Bachelor's in Science(UPSC Exam)</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="career-card" data-category="government">
-                            <div class="image-wrapper"><img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300932/0ee7dad3-1001-4961-9280-63bfa33c6377.png" class="career-image"><div class="match-tag" style="background-color: var(--color-secondary);">80% Match</div></div>
-                            <div class="content"><h3>IPS Officer</h3><p class="description">Maintain public order, prevent crime, and ensure law enforcement across state and central jurisdictions.</p><div class="info-grid"><div class="info-item"><div class="label">Salary</div><div class="value">₹8-30 LPA</div></div><div class="info-item"><div class="label">Education</div><div class="value dark">Any Graduate (UPSC Exam)</div></div></div></div>
+                            <div class="image-wrapper"><img
+                                    src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758300932/0ee7dad3-1001-4961-9280-63bfa33c6377.png"
+                                    class="career-image">
+                                <div class="match-tag" style="background-color: var(--color-secondary);">80% Match</div>
+                            </div>
+                            <div class="content">
+                                <h3>IPS Officer</h3>
+                                <p class="description">Maintain public order, prevent crime, and ensure law enforcement
+                                    across state and central jurisdictions.</p>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="label">Salary</div>
+                                        <div class="value">₹8-30 LPA</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="label">Education</div>
+                                        <div class="value dark">Any Graduate (UPSC Exam)</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -315,11 +678,13 @@
             <section class="colleges-hero">
                 <div class="container">
                     <h1>Find Your Perfect <span class="text-gradient">College</span></h1>
-                    <p>Discover over 1,200+ colleges across India with detailed information, rankings, fees, and placement records.</p>
+                    <p>Discover over 1,200+ colleges across India with detailed information, rankings, fees, and
+                        placement records.</p>
                     <div class="college-search-box">
                         <div class="search-input-wrapper">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="college-search-input-main" placeholder="Search colleges, courses, or locations...">
+                            <input type="text" id="college-search-input-main"
+                                placeholder="Search colleges, courses, or locations...">
                         </div>
                         <select id="stream-filter-main">
                             <option value="">All Streams</option>
@@ -342,22 +707,29 @@
                                 </div>
                                 <div class="filter-group">
                                     <h4>Location</h4>
-                                    <select class="filter-select" id="city-filter"><option value="">All Cities</option></select>
+                                    <select class="filter-select" id="city-filter">
+                                        <option value="">All Cities</option>
+                                    </select>
                                 </div>
                                 <div class="filter-group">
                                     <h4>College Type</h4>
                                     <div class="filter-options">
-                                        <label><input type="checkbox" value="Government" name="collegeType"> Government</label>
-                                        <label><input type="checkbox" value="Private" name="collegeType"> Private</label>
+                                        <label><input type="checkbox" value="Government" name="collegeType">
+                                            Government</label>
+                                        <label><input type="checkbox" value="Private" name="collegeType">
+                                            Private</label>
                                     </div>
                                 </div>
                                 <div class="filter-group">
                                     <h4>Annual Fee Range</h4>
                                     <div class="filter-options">
                                         <label><input type="radio" name="feeRange" value="50000"> Under ₹50,000</label>
-                                        <label><input type="radio" name="feeRange" value="100000"> ₹50k - ₹1 Lakh</label>
-                                        <label><input type="radio" name="feeRange" value="200000"> ₹1 Lakh - ₹2 Lakh</label>
-                                        <label><input type="radio" name="feeRange" value="9999999"> Above ₹2 Lakh</label>
+                                        <label><input type="radio" name="feeRange" value="100000"> ₹50k - ₹1
+                                            Lakh</label>
+                                        <label><input type="radio" name="feeRange" value="200000"> ₹1 Lakh - ₹2
+                                            Lakh</label>
+                                        <label><input type="radio" name="feeRange" value="9999999"> Above ₹2
+                                            Lakh</label>
                                     </div>
                                 </div>
                             </div>
@@ -367,26 +739,27 @@
                                 <p>Showing <span id="results-count">0</span> colleges</p>
                                 <div style="display:flex; align-items:center; gap:0.5rem;">
                                     <select class="sort-dropdown" id="sort-by">
-                                    <option value="relevance">Sort by: Relevance</option>
-                                    <option value="fee-low-high">Fee: Low to High</option>
-                                    <option value="fee-high-low">Fee: High to Low</option>
-                                </select>
+                                        <option value="relevance">Sort by: Relevance</option>
+                                        <option value="fee-low-high">Fee: Low to High</option>
+                                        <option value="fee-high-low">Fee: High to Low</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="college-list-container" id="college-list-container">
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
-        
+
         <div id="assessment-content" class="page-content">
             <section class="assessment-hero">
                 <div class="container">
                     <span class="hero-badge">Scientifically Validated Assessment</span>
                     <h1>Discover Your <span class="text-gradient">True Potential</span></h1>
-                    <p>Our comprehensive aptitude assessment combines personality insights, cognitive abilities, and interest mapping to reveal your ideal career path.</p>
+                    <p>Our comprehensive aptitude assessment combines personality insights, cognitive abilities, and
+                        interest mapping to reveal your ideal career path.</p>
                     <div class="stats-cards">
                         <div class="stat-card"><span>15-20</span> Minutes to Complete</div>
                         <div class="stat-card"><span>4</span> Assessment Modules</div>
@@ -399,24 +772,36 @@
                 <div class="container grid-container">
                     <div class="science-content">
                         <h2>The Science Behind Our Assessment</h2>
-                        <p>Our methodology is based on established psychological frameworks and validated against Indian educational and career contexts.</p>
+                        <p>Our methodology is based on established psychological frameworks and validated against Indian
+                            educational and career contexts.</p>
                         <div class="feature-list">
                             <div class="feature-item">
                                 <div class="icon-wrapper"><i class="fas fa-user"></i></div>
-                                <div><h3>Personality Profiling</h3><p>Based on Big Five personality traits, adapted for Indian cultural context.</p></div>
+                                <div>
+                                    <h3>Personality Profiling</h3>
+                                    <p>Based on Big Five personality traits, adapted for Indian cultural context.</p>
+                                </div>
                             </div>
                             <div class="feature-item">
                                 <div class="icon-wrapper"><i class="fas fa-brain"></i></div>
-                                <div><h3>Cognitive Assessment</h3><p>Evaluates logical reasoning, spatial intelligence, and problem-solving abilities.</p></div>
+                                <div>
+                                    <h3>Cognitive Assessment</h3>
+                                    <p>Evaluates logical reasoning, spatial intelligence, and problem-solving abilities.
+                                    </p>
+                                </div>
                             </div>
-                             <div class="feature-item">
+                            <div class="feature-item">
                                 <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
-                                <div><h3>Interest Mapping</h3><p>Uses Holland's RIASEC model to identify genuine interests.</p></div>
+                                <div>
+                                    <h3>Interest Mapping</h3>
+                                    <p>Uses Holland's RIASEC model to identify genuine interests.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="science-visual">
-                        <img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298938/806e695c-4870-4a8e-8de3-2ab06622e477.png" alt="Assessment Visual">
+                        <img src="https://res.cloudinary.com/dq2oaaso5/image/upload/v1758298938/806e695c-4870-4a8e-8de3-2ab06622e477.png"
+                            alt="Assessment Visual">
                     </div>
                 </div>
             </section>
@@ -445,7 +830,7 @@
                             </div>
                         </div>
                         <div class="dashboard-widget">
-                             <div class="widget-header">
+                            <div class="widget-header">
                                 <h2>Your Progress</h2>
                             </div>
                             <div id="progress-milestones">
@@ -470,15 +855,24 @@
                             <div class="quick-actions-container">
                                 <a href="#" id="retake-quiz-btn-dashboard" class="quick-action">
                                     <div class="icon"><i class="fas fa-redo"></i></div>
-                                    <div><h3>Retake Assessment</h3><p>Update your career profile</p></div>
+                                    <div>
+                                        <h3>Retake Assessment</h3>
+                                        <p>Update your career profile</p>
+                                    </div>
                                 </a>
                                 <a href="#" onclick="showPage('colleges-content')" class="quick-action">
                                     <div class="icon"><i class="fas fa-search-location"></i></div>
-                                    <div><h3>Find Colleges</h3><p>Location-based search</p></div>
+                                    <div>
+                                        <h3>Find Colleges</h3>
+                                        <p>Location-based search</p>
+                                    </div>
                                 </a>
                                 <a href="#" onclick="showPage('ai-counselor-content')" class="quick-action">
                                     <div class="icon"><i class="fas fa-comment-dots"></i></div>
-                                    <div><h3>Chat with AI</h3><p>Get instant guidance</p></div>
+                                    <div>
+                                        <h3>Chat with AI</h3>
+                                        <p>Get instant guidance</p>
+                                    </div>
                                 </a>
                             </div>
                         </div>
@@ -486,20 +880,26 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="ai-counselor-content" class="page-content">
             <div class="ai-counselor-layout container">
                 <aside class="ai-sidebar">
                     <div class="ai-profile-card card">
                         <div class="avatar"><i class="fas fa-robot"></i></div>
                         <h3>AI Career Counselor</h3>
-                        <div class="status"><div class="pulse-dot"></div><span>Online & Ready to Help</span></div>
+                        <div class="status">
+                            <div class="pulse-dot"></div><span>Online & Ready to Help</span>
+                        </div>
                         <p>Available 24/7 for personalized career guidance.</p>
                     </div>
                     <div class="conversation-modes card">
                         <h4>Conversation Modes</h4>
-                        <button class="mode-btn active"><i class="fas fa-bolt"></i><div>Quick Questions</div></button>
-                        <button class="mode-btn"><i class="fas fa-search"></i><div>Deep Dive Sessions</div></button>
+                        <button class="mode-btn active"><i class="fas fa-bolt"></i>
+                            <div>Quick Questions</div>
+                        </button>
+                        <button class="mode-btn"><i class="fas fa-search"></i>
+                            <div>Deep Dive Sessions</div>
+                        </button>
                     </div>
                     <div class="recent-sessions card">
                         <h4>Recent Sessions</h4>
@@ -520,8 +920,10 @@
                             Hi! 👋 I'm here to help you navigate your career journey. What's on your mind today?
                         </div>
                         <div class="conversation-starters">
-                            <button onclick="sendQuickMessage(this.innerText)">My parents want me to be a doctor, but I'm interested in design</button>
-                            <button onclick="sendQuickMessage(this.innerText)">What are the job prospects in data science?</button>
+                            <button onclick="sendQuickMessage(this.innerText)">My parents want me to be a doctor, but
+                                I'm interested in design</button>
+                            <button onclick="sendQuickMessage(this.innerText)">What are the job prospects in data
+                                science?</button>
                         </div>
                     </div>
                     <form class="chat-input-area" id="ai-chat-form">
@@ -532,58 +934,117 @@
             </div>
         </div>
     </main>
-    
+
     <footer class="main-footer">
         <div class="container grid-container">
             <div class="company-info">
                 <div class="logo-container">
-                    <svg viewBox="0 0 32 32" fill="currentColor" style="width: 2rem; height: 2rem; color: var(--color-primary);"><path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z"/><path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white"/></svg>
-                    <a href="#"><h3 style="font-size: 1.25rem; font-weight: 700; margin-left: 0.75rem;">CareerConnect</h3>
+                    <svg viewBox="0 0 32 32" fill="currentColor"
+                        style="width: 2rem; height: 2rem; color: var(--color-primary);">
+                        <path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z" />
+                        <path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white" />
+                    </svg>
+                    <a href="#">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; margin-left: 0.75rem;">CareerConnect</h3>
                 </div>
                 </a>
-                <p>Empowering students to make informed career decisions through AI-powered guidance, comprehensive assessments, and personalized recommendations.</p>
+                <p>Empowering students to make informed career decisions through AI-powered guidance, comprehensive
+                    assessments, and personalized recommendations.</p>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter fa-lg"></i></a> 
+                    <a href="#"><i class="fab fa-twitter fa-lg"></i></a>
                     <a href="#"><i class="fab fa-linkedin-in fa-lg"></i></a>
                 </div>
             </div>
             <div>
                 <h4>Quick Links</h4>
-                <div class="footer-links"><a href="#" onclick="showPage('assessment-content')">Aptitude Test</a><a href="#" onclick="showPage('career-explorer-content')">Career Explorer</a><a href="#" onclick="showPage('colleges-content')">College Directory</a></div>
+                <div class="footer-links"><a href="#" onclick="showPage('assessment-content')">Aptitude Test</a><a
+                        href="#" onclick="showPage('career-explorer-content')">Career Explorer</a><a href="#"
+                        onclick="showPage('colleges-content')">College Directory</a></div>
             </div>
             <div>
                 <h4>Support</h4>
-                 <div class="footer-links"><a href="#">Contact Us</a><a href="#">Privacy Policy</a><a href="#">FAQ</a></div>
+                <div class="footer-links"><a href="#">Contact Us</a><a href="#">Privacy Policy</a><a href="#">FAQ</a>
+                </div>
             </div>
         </div>
-        <div class="container footer-bottom"><p>© 2025 CareerConnect. All Rights Reserved.</p></div>
+        <div class="container footer-bottom">
+            <p>© 2025 CareerConnect. All Rights Reserved.</p>
+        </div>
+
+        <!-- feedback -->
+        <div id="feedback-card" class="feedback-card hidden">
+            <button id="close-feedback-card" class="feedback-close-btn"
+                aria-label="Close feedback card">&times;</button>
+            <div class="feedback-card-content">
+                <i class="fas fa-comment-dots"></i>
+                <h3>Have Feedback?</h3>
+                <p>Your opinion matters! Help us improve CareerConnect.</p>
+                <a href="feedback.html" class="btn-primary">Share Feedback</a>
+            </div>
+        </div>
     </footer>
 
     <div id="modal-container">
         <div class="modal-wrapper" id="auth-container" style="display: none;">
-            <div class="modal-box auth-box"><button class="close-btn" data-target="auth-container"><i class="fa-solid fa-times"></i></button><div class="auth-toggle"><button id="show-login-btn" class="active">Login</button><button id="show-signup-btn">Signup</button></div>
+            <div class="modal-box auth-box"><button class="close-btn" data-target="auth-container"><i
+                        class="fa-solid fa-times"></i></button>
+                <div class="auth-toggle"><button id="show-login-btn" class="active">Login</button><button
+                        id="show-signup-btn">Signup</button></div>
                 <form id="login-form">
-                    <h2>Welcome Back!</h2><p>Please enter your details to continue.</p>
-                    <div class="input-group"><label for="login-email">Email</label><input type="email" id="login-email" required></div>
-                    <div class="input-group"><label for="login-password">Password</label><input type="password" id="login-password" required></div>
-                    <p class="error-message" id="login-error"></p><button type="submit" class="cta-button">Login</button>
+                    <h2>Welcome Back!</h2>
+                    <p>Please enter your details to continue.</p>
+                    <div class="input-group"><label for="login-email">Email</label><input type="email" id="login-email"
+                            required></div>
+                    <div class="input-group"><label for="login-password">Password</label><input type="password"
+                            id="login-password" required></div>
+                    <p class="error-message" id="login-error"></p><button type="submit"
+                        class="cta-button">Login</button>
                 </form>
                 <form id="signup-form" style="display: none;">
-                    <h2>Create Your Account</h2><p>Get started with your personalized career journey.</p>
-                    <div class="input-group"><label for="signup-name">Full Name</label><input type="text" id="signup-name" required></div>
-                    <div class="input-group"><label for="signup-phone">Phone Number</label><input type="tel" id="signup-phone" required></div>
-                    <div class="input-group"><label for="signup-city">City</label><input type="text" id="signup-city" required></div>
-                    <div class="input-group"><label for="signup-email">Email</label><input type="email" id="signup-email" required></div>
-                    <div class="input-group"><label for="signup-password">Password (min. 6 characters)</label><input type="password" id="signup-password" required></div>
-                    <p class="error-message" id="signup-error"></p><button type="submit" class="cta-button">Create Account</button>
+                    <h2>Create Your Account</h2>
+                    <p>Get started with your personalized career journey.</p>
+                    <div class="input-group"><label for="signup-name">Full Name</label><input type="text"
+                            id="signup-name" required></div>
+                    <div class="input-group"><label for="signup-phone">Phone Number</label><input type="tel"
+                            id="signup-phone" required></div>
+                    <div class="input-group"><label for="signup-city">City</label><input type="text" id="signup-city"
+                            required></div>
+                    <div class="input-group"><label for="signup-email">Email</label><input type="email"
+                            id="signup-email" required></div>
+                    <div class="input-group"><label for="signup-password">Password (min. 6 characters)</label><input
+                            type="password" id="signup-password" required></div>
+                    <p class="error-message" id="signup-error"></p><button type="submit" class="cta-button">Create
+                        Account</button>
                 </form>
             </div>
         </div>
-        <div class="modal-wrapper" id="quiz-container" style="display: none;"><div class="modal-box"><button class="close-btn" data-target="quiz-container"><i class="fa-solid fa-times"></i></button><h2 id="question-text">Question goes here</h2><div class="options-container" id="options-container"></div><div class="modal-footer" style="margin-top: 2rem; color: #888;"><p>Question <span id="current-question-num">1</span> of <span id="total-questions-num"></span></p></div></div></div>
-        <div class="modal-wrapper" id="result-container" style="display: none;"><div class="modal-box"><button class="close-btn" data-target="result-container"><i class="fa-solid fa-times"></i></button><h2>Your Aptitude Test Result</h2><div id="result-content"></div><button class="cta-button" id="retake-quiz-btn" style="margin-top: 1rem;">Take Test Again</button></div></div>
-        <div class="modal-wrapper" id="report-container" style="display:none"><div class="modal-box"><button class="close-btn" data-target="report-container"><i class="fa-solid fa-times"></i></button><h2 id="report-title">Detailed Report</h2><div id="report-content"></div></div></div>
+        <div class="modal-wrapper" id="quiz-container" style="display: none;">
+            <div class="modal-box"><button class="close-btn" data-target="quiz-container"><i
+                        class="fa-solid fa-times"></i></button>
+                <h2 id="question-text">Question goes here</h2>
+                <div class="options-container" id="options-container"></div>
+                <div class="modal-footer" style="margin-top: 2rem; color: #888;">
+                    <p>Question <span id="current-question-num">1</span> of <span id="total-questions-num"></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-wrapper" id="result-container" style="display: none;">
+            <div class="modal-box"><button class="close-btn" data-target="result-container"><i
+                        class="fa-solid fa-times"></i></button>
+                <h2>Your Aptitude Test Result</h2>
+                <div id="result-content"></div><button class="cta-button" id="retake-quiz-btn"
+                    style="margin-top: 1rem;">Take Test Again</button>
+            </div>
+        </div>
+        <div class="modal-wrapper" id="report-container" style="display:none">
+            <div class="modal-box"><button class="close-btn" data-target="report-container"><i
+                        class="fa-solid fa-times"></i></button>
+                <h2 id="report-title">Detailed Report</h2>
+                <div id="report-content"></div>
+            </div>
+        </div>
     </div>
-    
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -605,4 +1066,5 @@
     </script>
     <script src="script.js"></script>
 </body>
+
 </html>
