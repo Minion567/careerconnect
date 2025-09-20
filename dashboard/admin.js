@@ -403,3 +403,51 @@ document.addEventListener('DOMContentLoaded', () => {
     window.seedColleges = function() { console.log("Seeding colleges..."); const colleges = [ { name: "SCD Government College", city: "Ludhiana", image: "https://images.unsplash.com/photo-1562774053-701939374585", website: "https://scdgovcollege.example.edu", lat: 30.9010, lon: 75.8573, courses: ["B.A.", "B.Sc.", "B.Com."], facilities: ["Hostel", "Library", "Wi-Fi", "Labs"], type: "Government", fee: 15000, placement: 60, package: 3.5, nirf: 101 }, { name: "Government Mohindra College", city: "Patiala", image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b", website: "https://mohindra.example.edu", lat: 30.3398, lon: 76.3869, courses: ["B.A.", "B.Sc.", "BCA"], facilities: ["Library", "Sports Complex", "Labs"], type: "Government", fee: 18000, placement: 55, package: 3.2, nirf: 125 }, { name: "NIT Jalandhar", city: "Jalandhar", image: "https://images.unsplash.com/photo-1607237138185-e894ee31b2af", website: "https://nitj.ac.in", lat: 31.3954, lon: 75.5355, courses: ["B.Tech", "M.Tech", "Ph.D"], facilities: ["Hostel", "Wi-Fi", "Labs", "Gym"], type: "Government", fee: 150000, placement: 95, package: 12.5, nirf: 46 }, { name: "Government Medical College", city: "Amritsar", image: "https://images.unsplash.com/photo-1584931422245-c3dd3b35065c", website: "https://gmc.example.edu", lat: 31.6340, lon: 74.8723, courses: ["MBBS", "MD", "MS"], facilities: ["Hostel", "Labs", "Library", "Hospital"], type: "Government", fee: 80000, placement: 100, package: 18.0, nirf: 55 }, { name: "Guru Nanak Dev University", city: "Amritsar", image: "https://images.unsplash.com/photo-1532649538693-79046d41e58c", website: "https://gndu.ac.in", lat: 31.6366, lon: 74.8239, courses: ["B.A.", "B.Sc.", "B.Tech", "LLB"], facilities: ["Hostel", "Library", "Wi-Fi", "Sports Complex"], type: "Government", fee: 45000, placement: 75, package: 5.5, nirf: 49 } ]; const batch = db.batch(); colleges.forEach(c => batch.set(db.collection("colleges").doc(), c)); batch.commit().then(() => alert("Successfully added 5 sample colleges!")); }
     window.seedTimeline = function() { console.log("Seeding timeline..."); const events = [ { title: "JEE Mains 2026 Session 1 Reg.", type: "exam", description: "Registration window for the first session.", deadline: "2025-11-30" }, { title: "NEET 2026 Registration", type: "exam", description: "National Eligibility cum Entrance Test for medical courses.", deadline: "2026-01-31" }, { title: "Punjab University Admissions", type: "admission", description: "Admission forms for B.A., B.Sc., B.Com. are available.", deadline: "2026-05-15" } ]; const batch = db.batch(); events.forEach(e => batch.set(db.collection("timelineEvents").doc(), e)); batch.commit().then(() => alert("Successfully added 3 timeline events!")); }
 });
+
+// --- Function to Fetch and Display Testimonials in Real-Time ---
+function fetchAndDisplayTestimonials() {
+    const tableBody = document.querySelector("#testimonials-table tbody");
+    if (!tableBody) return; // Exit if table body isn't found
+
+    // Use onSnapshot for real-time updates
+    db.collection("testimonials").onSnapshot(snapshot => {
+        let html = ""; // Start with an empty string
+        
+        snapshot.forEach(doc => {
+            const testimonial = doc.data();
+            const id = doc.id; // Get the document ID for actions
+
+            // Create a table row (<tr>) for each testimonial
+            html += `
+                <tr>
+                    <td>${testimonial.studentName || 'N/A'}</td>
+                    <td>${testimonial.testimonialText || 'No text available.'}</td>
+                    <td>${testimonial.rating || 'N/A'} ⭐</td>
+                    <td>
+                        <button class="edit-btn" data-id="${id}">Edit</button>
+                        <button class="delete-btn" data-id="${id}">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = html; // Update the table with all the new rows
+    }, error => {
+        console.error("Error fetching testimonials: ", error);
+        tableBody.innerHTML = '<tr><td colspan="4">Could not fetch testimonials.</td></tr>';
+    });
+}
+
+// --- Function to Handle Delete Button Clicks ---
+async function handleDeleteTestimonial(testimonialId) {
+    // Ask for confirmation before deleting
+    if (confirm("Are you sure you want to delete this testimonial?")) {
+        try {
+            await db.collection("testimonials").doc(testimonialId).delete();
+            console.log("Testimonial deleted successfully!");
+            // The table will update automatically because of onSnapshot
+        } catch (error) {
+            console.error("Error deleting testimonial: ", error);
+        }
+    }
+}
