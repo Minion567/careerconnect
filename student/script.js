@@ -918,7 +918,7 @@ function hideTypingIndicator() {
 }
 
 async function generateAIResponse(userMessage) {
-    const API_KEY = "YOUR_GEMINI_API_KEY"; 
+    const API_KEY = "AIzaSyByIfZG5TGeWwAyyGa2RYyv6MOkbE4a8v8";
     const url =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
 
