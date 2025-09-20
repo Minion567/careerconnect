@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let currentUser = null;
+    // Stats unsubscribe handles (module-level)
+    let statsUnsubs = { users: null, careers: null, colleges: null };
+    // Last seen stats to prevent re-animation jitter
+    let lastStats = { students: null, careers: null, colleges: null };
     let collegesFromDB = [];
     let uniqueCities = [];
     let latestQuizResultForSignup = null;
@@ -13,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('#main-nav-links a');
     const hamburgerMenu = document.getElementById('hamburger-menu');
     const mainNavLinks = document.getElementById('main-nav-links');
-    
+
     // Modals & Auth
     const authContainer = document.getElementById('auth-container');
     const loginForm = document.getElementById('login-form');
@@ -48,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const careerFilterButtons = document.querySelectorAll('.filter-btn');
     const careerCards = document.querySelectorAll('#career-grid-container .career-card');
     const careerSearchInput = document.getElementById('career-search-input');
-    
+
     // Colleges Page Elements
     const collegeListContainer = document.getElementById('college-list-container');
     const cityFilter = document.getElementById('city-filter');
@@ -182,14 +186,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         }
     ];
-    
+
     // ===================================================================
     // ! --- ALL FUNCTIONS DEFINED HERE FIRST ---
     // ===================================================================
-    
+
     // Utility Functions
-    function showModal(modal) { if(modal) modal.style.display = 'flex'; }
-    function hideModal(modal) { if(modal) modal.style.display = 'none'; }
+    function showModal(modal) { if (modal) modal.style.display = 'flex'; }
+    function hideModal(modal) { if (modal) modal.style.display = 'none'; }
 
     // Dashboard data loading function
     function loadDashboardData() {
@@ -208,25 +212,24 @@ document.addEventListener('DOMContentLoaded', () => {
             indicators.forEach((ind, i) => ind.classList.toggle('active', i === currentSlide));
         }
     }
-    window.nextSlide = function() {
+    window.nextSlide = function () {
         const slides = document.querySelectorAll('#carousel-container .carousel-slide');
         if (!slides.length) return;
         currentSlide = (currentSlide + 1) % slides.length;
         updateCarousel();
     }
-    window.previousSlide = function() {
+    window.previousSlide = function () {
         const slides = document.querySelectorAll('#carousel-container .carousel-slide');
         if (!slides.length) return;
         currentSlide = (currentSlide - 1 + slides.length) % slides.length;
         updateCarousel();
     }
-    window.goToSlide = function(index) {
+    window.goToSlide = function (index) {
         currentSlide = index;
         updateCarousel();
     }
 
-    // SPA Navigation Function
-    window.showPage = function(pageId) {
+    window.showPage = function (pageId) {
         pages.forEach(page => page.classList.remove('active'));
         const targetPage = document.getElementById(pageId);
         if (targetPage) targetPage.classList.add('active');
@@ -235,6 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
             link.classList.toggle('active', link.dataset.page === pageId);
         });
         window.scrollTo(0, 0);
+
+
 
         if (pageId === 'homepage-content') {
             if (studentsCount && studentsCount.textContent === "0") {
@@ -245,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (pageId === 'colleges-content' && collegesFromDB.length > 0) {
             applyFiltersAndSort();
-            try { renderCompareBar(); } catch(e) {}
+            try { renderCompareBar(); } catch (e) { }
         }
         if (pageId === 'dashboard-content' && currentUser) {
             loadDashboardData();
@@ -255,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================
     // ! --- MAIN APP LOGIC ---
     // ===================================================================
-    
+
     // Hamburger Menu Logic
     if (hamburgerMenu) {
         hamburgerMenu.addEventListener('click', () => {
@@ -271,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
 
     // Authentication
     auth.onAuthStateChanged(user => {
@@ -388,17 +392,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('signup-from-result-btn').addEventListener('click', () => {
                 hideModal(resultContainer);
                 showModal(authContainer);
-                if(showSignupBtn) showSignupBtn.click();
+                if (showSignupBtn) showSignupBtn.click();
             });
         }
         showModal(resultContainer);
     }
-    
-    // Colleges Logic
+
+
     async function loadCollegesFromFirestore() {
         try {
             const snapshot = await db.collection('colleges').get();
-            // If snapshot is empty, show an explicit empty-state and return
+
             if (!snapshot || !snapshot.docs || snapshot.docs.length === 0) {
                 collegesFromDB = [];
                 uniqueCities = [];
@@ -448,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!collegesFromDB) return;
         let filteredColleges = [...collegesFromDB];
         // Debug: show current filter state
-        try { console.log('Applying filters', { totalColleges: collegesFromDB.length, search: collegeSearchInputMain ? collegeSearchInputMain.value : null, city: cityFilter ? cityFilter.value : null, selectedTypes: Array.from(collegeTypeCheckboxes).filter(cb=>cb.checked).map(cb=>cb.value) }); } catch (e) {}
+        try { console.log('Applying filters', { totalColleges: collegesFromDB.length, search: collegeSearchInputMain ? collegeSearchInputMain.value : null, city: cityFilter ? cityFilter.value : null, selectedTypes: Array.from(collegeTypeCheckboxes).filter(cb => cb.checked).map(cb => cb.value) }); } catch (e) { }
         const searchTerm = (collegeSearchInputMain && collegeSearchInputMain.value) ? collegeSearchInputMain.value.toLowerCase() : '';
         if (searchTerm) {
             filteredColleges = filteredColleges.filter(c => {
@@ -465,12 +469,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedStream) {
             const s = selectedStream.toLowerCase();
             const streamKeywordsMap = {
-                'engineering': ['b.tech','btech','be','b.e','engineering','computer','cse','ece','ee','it','mechanical','civil','technology','tech','mca'],
-                'b.tech': ['b.tech','btech','be','engineering','computer','cse','it','technology'],
-                'mbbs': ['mbbs','bds','medical','medicine','nursing','pharmacy','health'],
-                'medical': ['mbbs','bds','medical','medicine','nursing','pharmacy','health'],
-                'management': ['mba','bba','management','business','commerce','mcom'],
-                'mba': ['mba','management','business','commerce']
+                'engineering': ['b.tech', 'btech', 'be', 'b.e', 'engineering', 'computer', 'cse', 'ece', 'ee', 'it', 'mechanical', 'civil', 'technology', 'tech', 'mca'],
+                'b.tech': ['b.tech', 'btech', 'be', 'engineering', 'computer', 'cse', 'it', 'technology'],
+                'mbbs': ['mbbs', 'bds', 'medical', 'medicine', 'nursing', 'pharmacy', 'health'],
+                'medical': ['mbbs', 'bds', 'medical', 'medicine', 'nursing', 'pharmacy', 'health'],
+                'management': ['mba', 'bba', 'management', 'business', 'commerce', 'mcom'],
+                'mba': ['mba', 'management', 'business', 'commerce']
             };
             let keywords = streamKeywordsMap[s] || [s];
             // Lowercased haystack: courses, name, stream, type
@@ -481,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         // Normalize selected types to lowercase to avoid case/whitespace mismatches
-    const selectedTypes = Array.from(collegeTypeCheckboxes).filter(cb => cb.checked).map(cb => (cb.value || '').toString().trim().toLowerCase());
+        const selectedTypes = Array.from(collegeTypeCheckboxes).filter(cb => cb.checked).map(cb => (cb.value || '').toString().trim().toLowerCase());
         if (selectedTypes.length > 0) {
             // helper to robustly match college type variants
             const matchesType = (collegeTypeRaw, collegeNameRaw, wanted) => {
@@ -516,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderColleges(filteredColleges);
         if (resultsCountSpan) resultsCountSpan.textContent = filteredColleges.length;
         if (filteredColleges.length === 0) {
-            console.warn('applyFiltersAndSort: no colleges matched filters', { searchTerm, selectedCity: cityFilter ? cityFilter.value : null, selectedTypes: Array.from(collegeTypeCheckboxes).filter(cb=>cb.checked).map(cb=>cb.value) });
+            console.warn('applyFiltersAndSort: no colleges matched filters', { searchTerm, selectedCity: cityFilter ? cityFilter.value : null, selectedTypes: Array.from(collegeTypeCheckboxes).filter(cb => cb.checked).map(cb => cb.value) });
         }
     }
     function renderColleges(collegesToRender) {
@@ -553,11 +557,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="college-card-actions">
                         ${college.website ? `<a class="btn-primary" href="${college.website}" target="_blank" rel="noreferrer">View Details</a>` : `<button class="btn-primary" disabled>View Details</button>`}
                         ${(() => {
-                            const idVal = college.id || college.name;
-                            const selected = getCompareList().some(i => i.id === idVal);
-                            const payload = JSON.stringify({ id: idVal, name: college.name, fee: college.fee, placement: college.placement, facilities: college.facilities || [], courses: college.courses || [], website: college.website || '' });
-                            return `<button class="btn-outline compare-btn ${selected ? 'selected' : ''}" aria-pressed="${selected}" data-college='${payload}'>${selected ? 'Selected' : 'Compare'}</button>`;
-                        })()}
+                    const idVal = college.id || college.name;
+                    const selected = getCompareList().some(i => i.id === idVal);
+                    const payload = JSON.stringify({ id: idVal, name: college.name, fee: college.fee, placement: college.placement, facilities: college.facilities || [], courses: college.courses || [], website: college.website || '' });
+                    return `<button class="btn-outline compare-btn ${selected ? 'selected' : ''}" aria-pressed="${selected}" data-college='${payload}'>${selected ? 'Selected' : 'Compare'}</button>`;
+                })()}
                     </div>
                 </div>`;
             collegeListContainer.appendChild(card);
@@ -580,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return JSON.parse(localStorage.getItem('collegeCompare') || '[]'); } catch (e) { return []; }
     }
     // Persist compare list, update header badge and compare bar
-    function setCompareList(list) { localStorage.setItem('collegeCompare', JSON.stringify(list)); renderCompareBadge(); try { renderCompareBar(); } catch(e) { /* ignore if not ready */ } }
+    function setCompareList(list) { localStorage.setItem('collegeCompare', JSON.stringify(list)); renderCompareBadge(); try { renderCompareBar(); } catch (e) { /* ignore if not ready */ } }
     // Persist compare list and refresh rendered college cards so button states update
     function setCompareListAndRefresh(list) { setCompareList(list); try { applyFiltersAndSort(); } catch (e) { /* ignore */ } }
     function toggleCompareCollege(col) {
@@ -642,15 +646,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Helper to format fee and placement consistently
-        const fmtFee = (f) => f ? `₹${(f/100000).toFixed(1)} L` : 'N/A';
+        const fmtFee = (f) => f ? `₹${(f / 100000).toFixed(1)} L` : 'N/A';
         const fmtPlacement = (p) => p ? `${p}%` : 'N/A';
 
         // Build a compact table: attributes as rows, each college as a column
         const attributes = [
-            { key: 'fee', label: 'Annual Fee', formatter: (c) => (c.fee ? `₹${(c.fee/100000).toFixed(1)} L` : 'N/A'), compare: (a,b) => ( (a||0) - (b||0) ), winner: 'lowest' },
-            { key: 'placement', label: 'Placement', formatter: (c) => (c.placement ? `${c.placement}%` : 'N/A'), compare: (a,b) => ( (b||0) - (a||0) ), winner: 'highest' },
-            { key: 'courses', label: 'Courses', formatter: (c) => ( (c.courses || []).slice(0,6).join(', ') || 'N/A' ), compare: (a,b) => ( ( (cLength(a)) - (cLength(b)) ) ), winner: 'highest' },
-            { key: 'facilities', label: 'Facilities', formatter: (c) => ( (c.facilities || []).slice(0,8).join(', ') || 'N/A' ), compare: (a,b) => ( ( (fLength(a)) - (fLength(b)) ) ), winner: 'highest' }
+            { key: 'fee', label: 'Annual Fee', formatter: (c) => (c.fee ? `₹${(c.fee / 100000).toFixed(1)} L` : 'N/A'), compare: (a, b) => ((a || 0) - (b || 0)), winner: 'lowest' },
+            { key: 'placement', label: 'Placement', formatter: (c) => (c.placement ? `${c.placement}%` : 'N/A'), compare: (a, b) => ((b || 0) - (a || 0)), winner: 'highest' },
+            { key: 'courses', label: 'Courses', formatter: (c) => ((c.courses || []).slice(0, 6).join(', ') || 'N/A'), compare: (a, b) => (((cLength(a)) - (cLength(b)))), winner: 'highest' },
+            { key: 'facilities', label: 'Facilities', formatter: (c) => ((c.facilities || []).slice(0, 8).join(', ') || 'N/A'), compare: (a, b) => (((fLength(a)) - (fLength(b)))), winner: 'highest' }
         ];
 
         // helpers for lengths
@@ -777,24 +781,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nowBtn) nowBtn.disabled = list.length < 2;
         // show/hide depending on current page
         showCompareBarIfOnColleges();
+
     }
 
     // Render initially
     try { renderCompareBar(); } catch (e) { /* ignore */ }
-    
+
     // Dashboard Logic
     function loadAptitudeResults() {
-        if(!currentUser) return;
+        if (!currentUser) return;
         const userQuizHistoryRef = db.collection('users').doc(currentUser.uid).collection('quizHistory').orderBy('timestamp', 'desc').limit(1);
         userQuizHistoryRef.onSnapshot(snapshot => {
             if (snapshot.empty) {
                 latestResultContent.innerHTML = '<p class="placeholder">Take a test to see your results!</p>';
-                if(careerMatchChart) careerMatchChart.destroy();
+                if (careerMatchChart) careerMatchChart.destroy();
             } else {
                 const latestResult = snapshot.docs[0].data();
                 latestQuizScores = latestResult.scores;
-                const topMatches = Object.entries(latestQuizScores).sort(([,a],[,b]) => b-a).slice(0, 3);
-                latestResultContent.innerHTML = topMatches.map(([stream, score], index) => `<div class="top-match-item match-${index+1}"><div class="match-info">${stream}</div><div class="match-score">${Math.round(score / Object.values(latestQuizScores).reduce((a,b)=>a+b,0) * 100)}% Match</div></div>`).join('');
+                const topMatches = Object.entries(latestQuizScores).sort(([, a], [, b]) => b - a).slice(0, 3);
+                latestResultContent.innerHTML = topMatches.map(([stream, score], index) => `<div class="top-match-item match-${index + 1}"><div class="match-info">${stream}</div><div class="match-score">${Math.round(score / Object.values(latestQuizScores).reduce((a, b) => a + b, 0) * 100)}% Match</div></div>`).join('');
                 renderRadarChart(latestQuizScores);
             }
         });
@@ -831,7 +836,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
                 let countdownHTML = daysLeft > 0 ? `<p>${daysLeft} days left</p>` : `<p>Deadline passed</p>`;
                 let iconClass = 'exam';
-                if(event.type === 'admission') iconClass = 'admission';
+                if (event.type === 'admission') iconClass = 'admission';
                 return `<div class="timeline-item"><div class="icon ${iconClass}"><i class="fas fa-calendar-alt"></i></div><div><h3>${event.title}</h3>${countdownHTML}</div></div>`;
             }).join('');
         });
@@ -851,101 +856,211 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
-    
-    // AI Counselor Logic
-    // === Send message to Gemini AI ===
-async function sendMessageToAI() {
-    const message = chatInput.value.trim();
-    if (message === '') return;
-
-    appendMessage(message, 'user');
-    chatInput.value = '';
-    chatInput.style.height = 'auto';
-
-    showTypingIndicator();
-    try {
-        const aiResponse = await generateAIResponse(message);
-        hideTypingIndicator();
-        appendMessage(aiResponse, 'ai');
-    } catch (err) {
-        hideTypingIndicator();
-        appendMessage("⚠️ Error: " + err.message, 'ai');
-    }
-}
-
-// === Append chat bubbles ===
-function appendMessage(text, type) {
-    const bubble = document.createElement('div');
-    bubble.className = `chat-bubble ${type}`;
-    bubble.textContent = text;
-    chatWindow.appendChild(bubble);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-// === Quick message shortcuts ===
-window.sendQuickMessage = async function(message) {
-    appendMessage(message, 'user');
-    showTypingIndicator();
-    try {
-        const aiResponse = await generateAIResponse(message);
-        hideTypingIndicator();
-        appendMessage(aiResponse, 'ai');
-    } catch (err) {
-        hideTypingIndicator();
-        appendMessage("⚠️ Error: " + err.message, 'ai');
-    }
-}
-
-// === Typing indicator ===
-function showTypingIndicator() {
-    const typingBubble = document.createElement('div');
-    typingBubble.className = 'chat-bubble ai typing-indicator';
-    typingBubble.id = 'typing-indicator';
-    typingBubble.innerHTML = `
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-    `;
-    chatWindow.appendChild(typingBubble);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-function hideTypingIndicator() {
-    const indicator = document.getElementById('typing-indicator');
-    if (indicator) indicator.remove();
-}
-
-async function generateAIResponse(userMessage) {
-    const API_KEY = "YOUR_GEMINI_API_KEY"; 
-    const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
-
-    const body = {
-        contents: [
-            {
-                role: "user",
-                parts: [{ text: userMessage }]
+    // --- Testimonials (homepage) ---
+    let testimonialUnsub = null;
+    function renderTestimonialsList(docs) {
+        const container = document.getElementById('carousel-container');
+        const indicators = document.getElementById('carousel-indicators');
+        if (!container) return;
+        container.innerHTML = '';
+        if (indicators) indicators.innerHTML = '';
+        if (!docs || docs.length === 0) {
+            container.innerHTML = `<div class="carousel-slide"><div class="card story-card"><p>No testimonials yet.</p></div></div>`;
+            return;
+        }
+        docs.forEach((doc, i) => {
+            const t = doc.data();
+            const img = t.img || 'https://via.placeholder.com/120';
+            const name = t.name || 'Anonymous';
+            const message = t.message || t.text || '';
+            const rating = t.rating || 0;
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `
+                <div class="card story-card">
+                    <img src="${img}" class="story-image" alt="${name}">
+                    <div>
+                        <div class="story-rating">${'★'.repeat(rating)}${rating ? '' : ''}</div>
+                        <blockquote>${escapeHtml(message)}</blockquote>
+                        <div class="student-name">${escapeHtml(name)}</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(slide);
+            if (indicators) {
+                const btn = document.createElement('button'); btn.className = 'indicator-btn'; if (i === 0) btn.classList.add('active'); btn.onclick = () => goToSlide(i);
+                indicators.appendChild(btn);
             }
-        ]
-    };
-
-    const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-        const err = await response.text();
-        throw new Error("Gemini API error: " + err);
+        });
+        // restart auto-rotate
+        currentSlide = 0; updateCarousel();
     }
 
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ No reply from AI.";
-}
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function loadTestimonialsForHomepage() {
+        if (testimonialUnsub) return;
+        try {
+            testimonialUnsub = db.collection('testimonials').where('visible', '==', true).orderBy('createdAt', 'desc').onSnapshot(snap => {
+                renderTestimonialsList(snap.docs);
+            }, err => {
+                console.error('Testimonials listener failed', err);
+                // Show a helpful message in the carousel so the public site indicates what's wrong
+                const container = document.getElementById('carousel-container');
+                if (container) {
+                    const errMsg = err && err.message ? err.message : 'Permission denied or network blocked';
+                    let extra = 'Please ensure Firestore rules allow public reads on <code>/testimonials</code> or disable ad-blockers.';
+                    // If Firestore tells us a composite index is required, include the console link to create it.
+                    const indexLink = 'https://console.firebase.google.com/v1/r/project/careeradvisorhackathon/firestore/indexes?create_composite=Cltwcm9qZWN0cy9jYXJlZXJhZHZpc29yaGFja2F0aG9uL2RhdGFiYXNlcy8oZGVmYXVsdCkvY29sbGVjdGlvbkdyb3Vwcy90ZXN0aW1vbmlhbHMvaW5kZXhlcy9fEAEaCwoHdmlzaWJsZRABGg0KCWNyZWF0ZWRBdBACGgwKCF9fbmFtZV9fEAI';
+                    if (errMsg.indexOf('requires an index') !== -1 || errMsg.indexOf('index') !== -1) {
+                        extra += ` You can create the required index <a href="${indexLink}" target="_blank" rel="noopener">here</a>.`;
+                    }
+                    container.innerHTML = `<div class="carousel-slide"><div class="card story-card"><p style="color:#a00;">Unable to load testimonials: ${escapeHtml(errMsg)}.</p><p>${extra}</p></div></div>`;
+                }
+            });
+        } catch (err) { console.error('Failed to attach testimonials listener', err); }
+    }
+
+    // --- Real-time Stats (listeners) ---
+    function loadDynamicStats() {
+        // avoid duplicate listeners
+        if (statsUnsubs.users || statsUnsubs.careers || statsUnsubs.colleges) return;
+
+        // Users count (exclude admin)
+        statsUnsubs.users = db.collection('users').onSnapshot(snap => {
+            try {
+                const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
+                const count = nonAdmin.length;
+                const el = document.getElementById('students-count');
+                if (el && lastStats.students !== count) { animateCounter(el, count); lastStats.students = count; }
+            } catch (err) { console.error('Error in users stats listener', err); }
+        }, console.error);
+
+        // Career paths (unique recommendedStream from any user's quizHistory)
+        statsUnsubs.careers = db.collectionGroup('quizHistory').onSnapshot(snap => {
+            try {
+                const unique = new Set();
+                snap.forEach(doc => {
+                    const rs = (doc.data && doc.data().recommendedStream) ? doc.data().recommendedStream : null;
+                    if (rs) unique.add(rs);
+                });
+                const el = document.getElementById('careers-count');
+                if (el && lastStats.careers !== unique.size) { animateCounter(el, unique.size); lastStats.careers = unique.size; }
+            } catch (err) { console.error('Error in careers stats listener', err); }
+        }, console.error);
+
+        // Colleges count
+        statsUnsubs.colleges = db.collection('colleges').onSnapshot(snap => {
+            try {
+                const el = document.getElementById('colleges-count');
+                if (el && lastStats.colleges !== snap.size) { animateCounter(el, snap.size); lastStats.colleges = snap.size; }
+            } catch (err) { console.error('Error in colleges stats listener', err); }
+        }, console.error);
+    }
+
+    function cleanupDynamicStats() {
+        try {
+            if (statsUnsubs.users) { statsUnsubs.users(); statsUnsubs.users = null; }
+            if (statsUnsubs.careers) { statsUnsubs.careers(); statsUnsubs.careers = null; }
+            if (statsUnsubs.colleges) { statsUnsubs.colleges(); statsUnsubs.colleges = null; }
+            lastStats = { students: null, careers: null, colleges: null };
+        } catch (err) { console.error('Error cleaning up stats listeners', err); }
+    }
+
+    async function sendMessageToAI() {
+        const message = chatInput.value.trim();
+        if (message === '') return;
+
+        appendMessage(message, 'user');
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+
+        showTypingIndicator();
+        try {
+            const aiResponse = await generateAIResponse(message);
+            hideTypingIndicator();
+            appendMessage(aiResponse, 'ai');
+        } catch (err) {
+            hideTypingIndicator();
+            appendMessage("⚠️ Error: " + err.message, 'ai');
+        }
+    }
+
+    // === Append chat bubbles ===
+    function appendMessage(text, type) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${type}`;
+        bubble.textContent = text;
+        chatWindow.appendChild(bubble);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // === Quick message shortcuts ===
+    window.sendQuickMessage = async function (message) {
+        appendMessage(message, 'user');
+        showTypingIndicator();
+        try {
+            const aiResponse = await generateAIResponse(message);
+            hideTypingIndicator();
+            appendMessage(aiResponse, 'ai');
+        } catch (err) {
+            hideTypingIndicator();
+            appendMessage("⚠️ Error: " + err.message, 'ai');
+        }
+    }
+
+    // === Typing indicator ===
+    function showTypingIndicator() {
+        const typingBubble = document.createElement('div');
+        typingBubble.className = 'chat-bubble ai typing-indicator';
+        typingBubble.id = 'typing-indicator';
+        typingBubble.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>`;
+        chatWindow.appendChild(typingBubble);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) indicator.remove();
+    }
+
+    async function generateAIResponse(userMessage) {
+        const API_KEY = "AIzaSyByIfZG5TGeWwAyyGa2RYyv6MOkbE4a8v8";
+        const url =
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
+
+        const body = {
+            contents: [
+                {
+                    role: "user",
+                    parts: [{ text: userMessage }]
+                }
+            ]
+        };
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error("Gemini API error: " + err);
+        }
+
+        const data = await response.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ No reply from AI.";
+    }
 
 
-    
+
     startQuizBtnHero.addEventListener('click', startQuiz);
     startQuizBtnAssessment.addEventListener('click', startQuiz);
     retakeQuizBtnDashboard.addEventListener('click', startQuiz);
@@ -957,7 +1072,7 @@ async function generateAIResponse(userMessage) {
     showSignupBtn.addEventListener('click', () => { loginForm.style.display = 'none'; signupForm.style.display = 'flex'; showSignupBtn.classList.add('active'); showLoginBtn.classList.remove('active'); });
     closeModalBtns.forEach(btn => btn.addEventListener('click', (e) => hideModal(document.getElementById(e.currentTarget.dataset.target))));
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { Object.values(document.querySelectorAll('.modal-wrapper')).forEach(hideModal); } });
-    
+
     if (carouselContainer) {
         const slides = carouselContainer.querySelectorAll('.carousel-slide');
         if (slides.length > 0) {
@@ -971,7 +1086,7 @@ async function generateAIResponse(userMessage) {
             setInterval(window.nextSlide, 5000);
         }
     }
-    
+
     careerFilterButtons.forEach(button => {
         button.addEventListener('click', () => {
             careerFilterButtons.forEach(btn => btn.classList.remove('active'));
@@ -986,7 +1101,7 @@ async function generateAIResponse(userMessage) {
             });
         });
     });
-    if(careerSearchInput) {
+    if (careerSearchInput) {
         careerSearchInput.addEventListener('keyup', () => {
             const searchTerm = careerSearchInput.value.toLowerCase();
             careerCards.forEach(card => {
@@ -1000,11 +1115,11 @@ async function generateAIResponse(userMessage) {
             });
         });
     }
-    
-    if(clearFiltersBtn) {
+
+    if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener('click', () => {
             document.querySelectorAll('.filters-sidebar input, .filters-sidebar select').forEach(el => {
-                if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+                if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
                 else el.value = '';
             });
             if (collegeSearchInputMain) collegeSearchInputMain.value = '';
@@ -1015,16 +1130,16 @@ async function generateAIResponse(userMessage) {
     document.querySelectorAll('#college-search-input-main, #city-filter, #sort-by').forEach(el => el.addEventListener('change', applyFiltersAndSort));
     collegeTypeCheckboxes.forEach(el => el.addEventListener('change', applyFiltersAndSort));
     feeRangeRadios.forEach(el => el.addEventListener('change', applyFiltersAndSort));
-    if(collegeSearchInputMain) collegeSearchInputMain.addEventListener('keyup', applyFiltersAndSort);
+    if (collegeSearchInputMain) collegeSearchInputMain.addEventListener('keyup', applyFiltersAndSort);
     // Wire the hero search button (in colleges hero) - look for a nearby button in the DOM
     try {
         const heroSearchButton = document.querySelector('.college-search-box .btn-primary');
         if (heroSearchButton) heroSearchButton.addEventListener('click', (e) => { e.preventDefault(); applyFiltersAndSort(); showPage('colleges-content'); });
     } catch (e) { /* ignore */ }
 
-    if(aiChatForm) aiChatForm.addEventListener('submit', (e) => { e.preventDefault(); sendMessageToAI(); });
-    if(chatInput) chatInput.addEventListener('input', () => { chatInput.style.height = 'auto'; chatInput.style.height = (chatInput.scrollHeight) + 'px'; });
-    
+    if (aiChatForm) aiChatForm.addEventListener('submit', (e) => { e.preventDefault(); sendMessageToAI(); });
+    if (chatInput) chatInput.addEventListener('input', () => { chatInput.style.height = 'auto'; chatInput.style.height = (chatInput.scrollHeight) + 'px'; });
+
     document.querySelectorAll('[href="ai_counselor_interface.html"]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1033,5 +1148,7 @@ async function generateAIResponse(userMessage) {
     });
 
     loadCollegesFromFirestore();
+    try { loadDynamicStats(); } catch (e) { console.error('Failed to start dynamic stats', e); }
+    try { loadTestimonialsForHomepage(); } catch (e) { console.error('Failed to start testimonials listener', e); }
     showPage('homepage-content'); // Start on the homepage
 });
