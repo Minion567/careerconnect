@@ -383,9 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (pageId === 'homepage-content') {
             if (studentsCount && studentsCount.textContent === "0") {
-                animateCounter(studentsCount, 25847);
-                animateCounter(careersCount, 180);
-                animateCounter(collegesCount, 1200);
+                animateCounter(studentsCount, 11);
+                animateCounter(careersCount, 12);
+                animateCounter(collegesCount, 20);
             }
         }
         // Start/stop career-explorer specific listeners
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (feedbackCard) {
                 feedbackCard.classList.remove('hidden');
             }
-        }, 5000); // 5000 milliseconds = 5 seconds
+        }, 11000); // 5000 milliseconds = 5 seconds
     }
 
     // Logic to close the card

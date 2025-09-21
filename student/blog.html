@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - CareerConnect</title>
+    <!-- Link to your existing stylesheet for base styles -->
+    <link rel="stylesheet" href="style.css" /> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Additional styles specific to the blog page */
+        .blog-hero {
+            background: linear-gradient(to bottom right, var(--color-primary-50), #fff7ed);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .blog-hero h1 {
+            font-size: 2.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .blog-hero p {
+            font-size: 1.125rem;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .blog-main-content {
+            padding: 3rem 0;
+        }
+        
+        .blog-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .blog-layout {
+                grid-template-columns: 3fr 1fr;
+            }
+        }
+        
+        /* --- Blog Posts Styling --- */
+        .blog-post-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .blog-post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .blog-post-card .post-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        
+        .blog-post-card .post-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        .post-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            background-color: var(--color-primary-100);
+            color: var(--color-primary);
+        }
+        
+        .post-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        
+        .post-meta {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .post-excerpt {
+            color: var(--color-text-secondary);
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more-link {
+            font-weight: 600;
+            color: var(--color-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .read-more-link i {
+            transition: transform 0.2s;
+        }
+
+        .read-more-link:hover i {
+            transform: translateX(4px);
+        }
+
+        /* --- Featured Post --- */
+        .featured-post .blog-post-card {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .featured-post .blog-post-card {
+                grid-template-columns: 1fr 1fr;
+            }
+            .featured-post .post-image {
+                height: 100%;
+                min-height: 350px;
+            }
+        }
+        
+        /* --- Posts Grid --- */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* --- Sidebar --- */
+        .sidebar-widget {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-widget-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .sidebar-widget ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-widget ul li a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--color-text-secondary);
+            transition: color 0.2s;
+        }
+
+        .sidebar-widget ul li a:hover {
+            color: var(--color-primary);
+        }
+
+        .recent-post-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .recent-post-item:last-child {
+            margin-bottom: 0;
+        }
+        .recent-post-item img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        .recent-post-title {
+            font-weight: 600;
+            color: var(--color-text-primary);
+            line-height: 1.4;
+        }
+        .recent-post-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Reusing the same nav from your main page -->
+    <nav class="main-nav">
+        <div class="container nav-container">
+            <div class="logo-container">
+                <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z"/><path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white"/></svg>
+                <a href="index.html"><h1>CareerConnect</h1></a>
+            </div>
+            <div class="nav-links" id="main-nav-links">
+                <a href="index.html">Home</a>
+                <!-- Add other links back to your SPA sections if needed -->
+                <a href="blog.html" class="active">Blog</a>
+                <a href="resume.html">Resume Builder</a>
+                <a href="feedback.html">Feedback</a>
+            </div>
+            <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="blog-hero">
+            <div class="container">
+                <h1>The CareerConnect <span class="text-gradient">Blog</span></h1>
+                <p>Expert advice, student success stories, and the latest trends in career development and higher education in India.</p>
+            </div>
+        </section>
+
+        <section class="blog-main-content">
+            <div class="container">
+                <div class="blog-layout">
+                    <!-- Main Blog Posts -->
+                    <div class="posts-main-column">
+                        <!-- Featured Post -->
+                        <div class="featured-post">
+                            <h2 class="section-title" style="text-align: left; font-size: 1.75rem; margin-bottom: 1.5rem;">Featured Post</h2>
+                            <article class="blog-post-card">
+                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Students in a workshop" class="post-image">
+                                <div class="post-content">
+                                    <span class="post-tag">Career Guidance</span>
+                                    <h3 class="post-title">Beyond Engineering & Medicine: Exploring 5 High-Growth Career Paths in India</h3>
+                                    <p class="post-meta">By Priya Sharma | September 21, 2025</p>
+                                    <p class="post-excerpt">The Indian job market is evolving rapidly. While engineering and medicine remain popular, a wave of new, exciting, and lucrative career fields is emerging. Let's dive into five unconventional paths that promise immense growth...</p>
+                                    <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </article>
+                        </div>
+
+                        <!-- Latest Posts -->
+                        <h2 class="section-title" style="text-align: left; font-size: 1.75rem; margin-bottom: 1.5rem; margin-top: 3rem;">Latest Posts</h2>
+                        <div class="posts-grid">
+                            <article class="blog-post-card">
+                                <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2070&auto=format&fit=crop" alt="Building a resume" class="post-image">
+                                <div class="post-content">
+                                    <span class="post-tag">Skill Building</span>
+                                    <h3 class="post-title">How to Craft the Perfect Resume for Your First Job</h3>
+                                    <p class="post-meta">By Rohan Verma | September 18, 2025</p>
+                                    <p class="post-excerpt">Your resume is your first impression. Learn how to highlight your skills and projects effectively, even with no formal work experience.</p>
+                                    <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </article>
+                            <article class="blog-post-card">
+                                <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop" alt="Aptitude test" class="post-image">
+                                <div class="post-content">
+                                    <span class="post-tag">Self Assessment</span>
+                                    <h3 class="post-title">Decoding Your Aptitude Test: What Your Scores Really Mean</h3>
+                                    <p class="post-meta">By Dr. Anjali Mehta | September 15, 2025</p>
+                                    <p class="post-excerpt">You've taken the test, now what? We break down how to interpret your aptitude results to make informed career choices.</p>
+                                    <a href="#" class="read-more-link">Read More <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <aside class="sidebar-column">
+                        <div class="sidebar-widget">
+                            <h3 class="sidebar-widget-title">Categories</h3>
+                            <ul>
+                                <li><a href="#">Career Guidance</a></li>
+                                <li><a href="#">Skill Building</a></li>
+                                <li><a href="#">College Life</a></li>
+                                <li><a href="#">Exam Preparation</a></li>
+                                <li><a href="#">Success Stories</a></li>
+                            </ul>
+                        </div>
+                        <div class="sidebar-widget">
+                            <h3 class="sidebar-widget-title">Recent Posts</h3>
+                            <ul>
+                                <li>
+                                    <a href="#" class="recent-post-item">
+                                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=200&auto=format&fit=crop" alt="Workshop">
+                                        <div>
+                                            <h4 class="recent-post-title">Beyond Engineering & Medicine...</h4>
+                                            <p class="recent-post-meta">Sep 21, 2025</p>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="recent-post-item">
+                                        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=200&auto=format&fit=crop" alt="Resume">
+                                        <div>
+                                            <h4 class="recent-post-title">How to Craft the Perfect Resume...</h4>
+                                            <p class="recent-post-meta">Sep 18, 2025</p>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Reusing the same footer from your main page -->
+    <footer class="main-footer">
+        <!-- Paste your existing footer HTML here for consistency -->
+        <div class="container grid-container">
+            <div class="company-info">
+                <div class="logo-container">
+                    <svg viewBox="0 0 32 32" fill="currentColor" style="width: 2rem; height: 2rem; color: var(--color-primary);"><path d="M16 2L3 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-13-5z"/><path d="M16 8l-6 2.5v5c0 2.78 1.92 5.37 4.5 6 2.58-.63 4.5-3.22 4.5-6v-5L16 8z" fill="white"/></svg>
+                    <a href="index.html"><h3 style="font-size: 1.25rem; font-weight: 700; margin-left: 0.75rem;">CareerConnect</h3></a>
+                </div>
+                <p>Empowering students to make informed career decisions through AI-powered guidance, comprehensive assessments, and personalized recommendations.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter fa-lg"></i></a> 
+                    <a href="#"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <div class="footer-links"><a href="index.html">Home</a><a href="blog.html">Blog</a><a href="feedback.html">Feedback</a></div>
+            </div>
+             <div>
+                <h4>Support</h4>
+                 <div class="footer-links"><a href="#">Contact Us</a><a href="#">Privacy Policy</a><a href="#">FAQ</a></div>
+            </div>
+        </div>
+        <div class="container footer-bottom"><p>© 2025 CareerConnect. All Rights Reserved.</p></div>
+    </footer>
+
+    <script>
+        // Simple script for mobile navigation on this page
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburgerMenu = document.getElementById('hamburger-menu');
+            const mainNavLinks = document.getElementById('main-nav-links');
+
+            if (hamburgerMenu) {
+                hamburgerMenu.addEventListener('click', () => {
+                    mainNavLinks.classList.toggle('nav-active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
