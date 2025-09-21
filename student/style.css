@@ -159,6 +159,11 @@ a {
   background-color: rgb(7, 7, 245);
   color: white; /* Add this line to change the text color on hover */
 }
+.compare-btn.selected {
+  background-color: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+}
 .btn-outline{
   display: inline-flex;
   align-items: center;
@@ -2429,5 +2434,141 @@ a {
         left: 10px;
         max-width: none;
         padding: 1.25rem;
+    }
+}
+
+/* ======================================================================== */
+/* ! --- COMPARE BAR STYLES --- */
+/* ======================================================================== */
+#compare-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 80px;
+}
+
+.compare-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    overflow-x: auto;
+}
+
+.compare-chip {
+    display: flex;
+    align-items: center;
+    background: var(--color-primary-100);
+    color: var(--color-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    gap: 0.5rem;
+}
+
+.chip-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.remove-chip {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.remove-chip:hover {
+    background: rgba(30, 64, 175, 0.1);
+}
+
+.compare-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.compare-now-btn {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.compare-now-btn:hover:not(:disabled) {
+    background: var(--color-primary-700);
+}
+
+.compare-now-btn:disabled {
+    background: var(--color-text-muted);
+    cursor: not-allowed;
+}
+
+.compare-clear-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.compare-clear-btn:hover {
+    background: var(--color-surface);
+    border-color: var(--color-text-muted);
+}
+
+/* Responsive design for compare bar */
+@media (max-width: 768px) {
+    #compare-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    
+    .compare-chips-container {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .compare-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .compare-now-btn,
+    .compare-clear-btn {
+        flex: 1;
+        padding: 0.625rem 1rem;
     }
 }
