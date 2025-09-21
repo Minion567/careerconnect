@@ -42,6 +42,7 @@
                     <a href="#" class="menu-item active" data-target="dashboard-main"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                     <a href="#" class="menu-item" data-target="students-widget"><i class="fas fa-users"></i> Students</a>
                     <a href="#" class="menu-item" data-target="colleges-widget"><i class="fas fa-school"></i> Colleges</a>
+                    <a href="#" class="menu-item" data-target="careers-widget"><i class="fas fa-briefcase"></i> Careers</a>
                     <a href="#" class="menu-item" data-target="events-widget"><i class="fas fa-calendar-alt"></i> Events</a>
                     <a href="#" class="menu-item" data-target="testimonials-widget"><i class="fas fa-quote-right"></i> Testimonials</a>
                 </nav>
@@ -133,6 +134,19 @@
                     <div class="table-container">
                         <table id="colleges-table">
                             <thead><tr><th>Name</th><th>City</th><th>Actions</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="careers-widget" class="dashboard-widget">
+                    <div class="widget-header">
+                        <h2 class="widget-title">Manage Careers</h2>
+                        <button class="admin-button" id="add-career-btn"><i class="fas fa-plus"></i> Add Career</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="careers-table">
+                            <thead><tr><th>Career</th><th>Description</th><th>Avg Salary</th><th>Education Required</th><th>Actions</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>

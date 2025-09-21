@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentsTableBody = document.querySelector('#students-table tbody');
     const collegesTableBody = document.querySelector('#colleges-table tbody');
     const eventsTableBody = document.querySelector('#events-table tbody');
+    const careersTableBody = document.querySelector('#careers-table tbody');
 
     // Dashboard Elements
     const studentCountEl = document.getElementById('student-count');
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const seedCollegesBtn = document.getElementById('seed-colleges-btn');
     const seedTimelineBtn = document.getElementById('seed-timeline-btn');
     const addTestimonialBtn = document.getElementById('add-testimonial-btn');
+    const addCareerBtn = document.getElementById('add-career-btn');
     const testimonialsTableBody = document.querySelector('#testimonials-table tbody');
 
     const ADMIN_EMAIL = "admin@careerconnect.com"; 
@@ -84,9 +86,67 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadDashboardData() {
         loadStudentsAndRenderCharts();
         loadColleges();
+        loadCareers();
         loadEvents();
         loadTestimonials();
         loadRecentActivity();
+    }
+
+    // --- Careers Management ---
+    function loadCareers() {
+        if (!careersTableBody) return;
+        db.collection('careers').orderBy('career','asc').onSnapshot(snapshot => {
+            careersTableBody.innerHTML = '';
+            snapshot.forEach(doc => {
+                const c = doc.data() || {};
+                const row = document.createElement('tr');
+                const desc = (c.description || '').substring(0,120).replace(/</g,'&lt;');
+                row.innerHTML = `<td>${(c.career||'').replace(/</g,'&lt;')}</td><td>${desc}</td><td>${c.avgSalary ? (c.avgSalary) : '-'}</td><td>${(c.educationRequired||'')}</td><td><button class="edit-career-btn" data-id="${doc.id}">Edit</button> <button class="delete-career-btn" data-id="${doc.id}">Delete</button></td>`;
+                careersTableBody.appendChild(row);
+            });
+        }, err => { console.error('Failed to load careers', err); });
+    }
+
+    function showAddCareerModal() {
+        const formHTML = `
+            <form id="add-career-form">
+                <input class="full-width" type="url" name="image" placeholder="Image URL (https://...)">
+                <input class="full-width" type="text" name="career" placeholder="Career/Role (e.g., Data Scientist)" required>
+                <textarea class="full-width" name="description" placeholder="Short description" required></textarea>
+                <select name="type" required>
+                    <option value="" disabled selected>Select Career Type</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Government">Government</option>
+                    <option value="Creative">Creative</option>
+                </select>
+                <input class="full-width" type="text" name="avgSalary" placeholder="Average Salary (e.g., 6 LPA)">
+                <input class="full-width" type="text" name="educationRequired" placeholder="Education required (e.g., B.Tech, MCA)">
+                <button type="submit" class="admin-button primary full-width">Add Career</button>
+            </form>
+        `;
+        openModal('Add Career', formHTML);
+    }
+
+    function showEditCareerModal(id, data) {
+        const formHTML = `
+            <form id="edit-career-form" data-id="${id}">
+                <input class="full-width" type="url" name="image" placeholder="Image URL (https://...)" value="${(data.image||'').replace(/"/g,'&quot;')}">
+                <input class="full-width" type="text" name="career" placeholder="Career/Role" value="${(data.career||'').replace(/"/g,'&quot;')}" required>
+                <textarea class="full-width" name="description" placeholder="Short description" required>${(data.description||'').replace(/</g,'&lt;')}</textarea>
+                <select name="type" required>
+                    <option value="Technology" ${((data.type||'')==='Technology')?'selected':''}>Technology</option>
+                    <option value="Healthcare" ${((data.type||'')==='Healthcare')?'selected':''}>Healthcare</option>
+                    <option value="Government" ${((data.type||'')==='Government')?'selected':''}>Government</option>
+                    <option value="Creative" ${((data.type||'')==='Creative')?'selected':''}>Creative</option>
+                </select>
+                <input class="full-width" type="text" name="avgSalary" placeholder="Average Salary" value="${(data.avgSalary||'')}">
+                <input class="full-width" type="text" name="educationRequired" placeholder="Education required" value="${(data.educationRequired||'')}">
+                <div style="display:flex; gap:0.5rem; margin-top:1rem;"><button type="submit" class="admin-button primary">Save</button><button type="button" id="cancel-career-edit" class="admin-button">Cancel</button></div>
+            </form>
+        `;
+        openModal('Edit Career', formHTML);
+        document.getElementById('cancel-career-edit').addEventListener('click', closeModal);
     }
 
     async function loadStudentsAndRenderCharts() {
@@ -344,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addEventBtnMain) addEventBtnMain.addEventListener('click', showAddEventModal);
     if (addEventBtnHeader) addEventBtnHeader.addEventListener('click', showAddEventModal);
     if (addTestimonialBtn) addTestimonialBtn.addEventListener('click', showAddTestimonialModal);
+    if (addCareerBtn) addCareerBtn.addEventListener('click', showAddCareerModal);
     if (seedCollegesBtn) seedCollegesBtn.addEventListener('click', () => { if(confirm("This will add 5 sample colleges. Proceed?")) window.seedColleges(); });
     if (seedTimelineBtn) seedTimelineBtn.addEventListener('click', () => { if(confirm("This will add 3 sample events. Proceed?")) window.seedTimeline(); });
 
@@ -370,6 +431,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: formData.get('title'), description: formData.get('description'),
                 type: formData.get('type'), deadline: formData.get('deadline'),
             }).then(() => closeModal());
+        }
+        // Add Career
+        if (e.target && e.target.id === 'add-career-form') {
+            e.preventDefault();
+            if (!auth || !auth.currentUser || String((auth.currentUser && auth.currentUser.email) || '').toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+                return alert('You must be signed in as the admin (' + ADMIN_EMAIL + ') to add careers. Please sign in and try again.');
+            }
+            const formData = new FormData(e.target);
+            const payload = {
+                image: formData.get('image') || '',
+                career: formData.get('career'),
+                description: formData.get('description'),
+                type: formData.get('type') || '',
+                avgSalary: formData.get('avgSalary') || '',
+                educationRequired: formData.get('educationRequired') || '',
+                createdAt: new Date()
+            };
+            db.collection('careers').add(payload).then(() => closeModal()).catch(err => { console.error('Failed to add career', err); alert('Failed to add career. See console for details.'); });
         }
     });
 
@@ -410,6 +489,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = e.target.dataset.id;
             if (confirm('Are you sure you want to delete this testimonial?')) {
                 db.collection('testimonials').doc(id).delete();
+            }
+        }
+        // Edit career
+        if (e.target && e.target.classList.contains('edit-career-btn')) {
+            const id = e.target.dataset.id;
+            db.collection('careers').doc(id).get().then(doc => {
+                if (!doc.exists) return alert('Career not found');
+                showEditCareerModal(id, doc.data() || {});
+            }).catch(err => { console.error('Error fetching career for edit', err); alert('Failed to load career for editing'); });
+        }
+        // Delete career
+        if (e.target && e.target.classList.contains('delete-career-btn')) {
+            const id = e.target.dataset.id;
+            if (confirm('Are you sure you want to delete this career entry?')) {
+                db.collection('careers').doc(id).delete().catch(err => { console.error('Failed to delete career', err); alert('Failed to delete career. See console.'); });
             }
         }
     });
@@ -507,6 +601,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Failed to save testimonial edits. See console for details.\nError: ' + (err && err.message ? err.message : String(err)));
             });
         }
+        // Edit Career
+        if (e.target && e.target.id === 'edit-career-form') {
+            e.preventDefault();
+            if (!auth || !auth.currentUser || String((auth.currentUser && auth.currentUser.email) || '').toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+                return alert('You must be signed in as the admin (' + ADMIN_EMAIL + ') to edit careers. Please sign in and try again.');
+            }
+            const id = e.target.dataset.id;
+            const formData = new FormData(e.target);
+            const updated = {
+                image: formData.get('image') || '',
+                career: formData.get('career'),
+                type: formData.get('type') || '',
+                description: formData.get('description'),
+                avgSalary: formData.get('avgSalary') || '',
+                educationRequired: formData.get('educationRequired') || ''
+            };
+            db.collection('careers').doc(id).update(updated).then(() => closeModal()).catch(err => { console.error('Failed to save career edits', err); alert('Failed to save career edits. See console for details.'); });
+        }
     });
 
     // --- CONSOLE HELPERS (Seeder functions) ---
@@ -515,4 +627,3 @@ document.addEventListener('DOMContentLoaded', () => {
     window.seedTimeline = function() { console.log("Seeding timeline..."); const events = [ { title: "JEE Mains 2026 Session 1 Reg.", type: "exam", description: "Registration window for the first session.", deadline: "2025-11-30" }, { title: "NEET 2026 Registration", type: "exam", description: "National Eligibility cum Entrance Test for medical courses.", deadline: "2026-01-31" }, { title: "Punjab University Admissions", type: "admission", description: "Admission forms for B.A., B.Sc., B.Com. are available.", deadline: "2026-05-15" } ]; const batch = db.batch(); events.forEach(e => batch.set(db.collection("timelineEvents").doc(), e)); batch.commit().then(() => alert("Successfully added 3 timeline events!")); }
 });
 
-// Testimonials utilities cleaned up; real-time loading handled by loadTestimonials() above.

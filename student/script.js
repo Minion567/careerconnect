@@ -46,10 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentsCount = document.getElementById('students-count');
     const careersCount = document.getElementById('careers-count');
     const collegesCount = document.getElementById('colleges-count');
+    // Career-hero stat boxes (the larger header numbers on career-explorer page)
+    const studentsCountCareerBox = document.getElementById('students-count-career');
+    const careersCountCareerBox = document.getElementById('careers-count-career');
+    const collegesCountCareerBox = document.getElementById('colleges-count-career');
 
     // Career Explorer Page Elements
     const careerFilterButtons = document.querySelectorAll('.filter-btn');
-    const careerCards = document.querySelectorAll('#career-grid-container .career-card');
+    // DO NOT query career cards once here; they are dynamically rendered. Use runtime queries when filtering.
     const careerSearchInput = document.getElementById('career-search-input');
 
     // Colleges Page Elements
@@ -81,6 +85,142 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================
     // ! --- ALL FUNCTIONS DEFINED HERE FIRST ---
     // ===================================================================
+
+    // --- Careers: load from Firestore for student-facing explorer ---
+    let careersFromDB = [];
+    function loadCareersFromFirestore() {
+        if (!db) return;
+        db.collection('careers').orderBy('career').get().then(snapshot => {
+            careersFromDB = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderCareerGrid(careersFromDB);
+        }).catch(err => {
+            console.error('Failed to load careers for explorer', err);
+        });
+    }
+
+    function getCareerCompareList() {
+        try { return JSON.parse(localStorage.getItem('careerCompare') || '[]'); } catch (e) { return []; }
+    }
+    function setCareerCompareList(list) { localStorage.setItem('careerCompare', JSON.stringify(list)); renderCareerCompareBadge(); }
+    function setCareerCompareListAndRefresh(list) { setCareerCompareList(list); renderCareerGrid(careersFromDB); }
+
+    function toggleCompareCareer(career) {
+        const list = getCareerCompareList();
+        const exists = list.find(i => i.id === career.id);
+        if (exists) {
+            const newList = list.filter(i => i.id !== career.id);
+            setCareerCompareListAndRefresh(newList);
+        } else {
+            if (list.length >= 3) return alert('You can compare up to 3 careers only.');
+            list.push(career);
+            setCareerCompareListAndRefresh(list);
+        }
+    }
+
+    function renderCareerCompareBadge() {
+        const el = document.getElementById('career-compare-badge');
+        if (!el) return;
+        const count = getCareerCompareList().length;
+        el.textContent = count > 0 ? `Compare (${count})` : 'Compare';
+    }
+
+    function renderCareerGrid(list) {
+        const container = document.getElementById('career-grid-container');
+        if (!container) return;
+        // If no dynamic data, keep existing static markup
+        if (!list || list.length === 0) return;
+        container.innerHTML = '';
+        const compareList = getCareerCompareList();
+        list.forEach(c => {
+            const card = document.createElement('div');
+            const category = (c.type||'').toString().toLowerCase();
+            card.className = 'career-card';
+            card.dataset.category = category;
+            card.innerHTML = `
+                <div class="image-wrapper"><img src="${c.image||'https://via.placeholder.com/400x200'}" class="career-image" alt="${escapeHtml(c.career)}"></div>
+                <div class="content">
+                    <h3>${escapeHtml(c.career)}</h3>
+                    <p class="description">${escapeHtml((c.description||'').slice(0,250))}</p>
+                    <div class="info-grid">
+                        <div class="info-item"><div class="label">Salary</div><div class="value">${escapeHtml(c.avgSalary || 'N/A')}</div></div>
+                        <div class="info-item"><div class="label">Education</div><div class="value dark">${escapeHtml(c.educationRequired || 'N/A')}</div></div>
+                    </div>
+                    <div class="career-meta"><div class="value job-type">${escapeHtml(c.type || '')}</div></div>
+                    <div class="career-card-actions"><button class="btn-outline career-compare-btn ${compareList.some(x=>x.id===c.id)?'selected':''}" data-career='${JSON.stringify({ id: c.id, career: c.career, avgSalary: c.avgSalary, educationRequired: c.educationRequired, type: c.type })}'>${compareList.some(x=>x.id===c.id)?'Selected':'Compare'}</button></div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        // wire compare buttons
+        document.querySelectorAll('.career-compare-btn').forEach(btn => btn.addEventListener('click', (e) => {
+            try { const payload = JSON.parse(e.currentTarget.dataset.career); toggleCompareCareer(payload); } catch (err) { console.error('Failed to parse career payload', err); }
+        }));
+    }
+
+    function ensureCareerCompareModal() {
+        if (document.getElementById('career-compare-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'career-compare-modal';
+        modal.className = 'modal-wrapper';
+        modal.style.display = 'none';
+        modal.innerHTML = `<div class="modal-box"><button class="close-btn" id="close-career-compare"><i class="fa-solid fa-times"></i></button><h2 style="text-align:center;">Compare Careers</h2><div id="career-compare-contents"></div></div>`;
+        document.body.appendChild(modal);
+        document.getElementById('close-career-compare').addEventListener('click', () => { modal.style.display = 'none'; });
+    }
+
+    function showCareerCompareModal() {
+        ensureCareerCompareModal();
+        const modal = document.getElementById('career-compare-modal');
+        const contents = document.getElementById('career-compare-contents');
+        const list = getCareerCompareList();
+        if (!list || list.length === 0) {
+            contents.innerHTML = '<p style="text-align:center;">No careers selected for comparison.</p>';
+            modal.style.display = 'flex';
+            return;
+        }
+        let table = `<table class="compare-table"><thead><tr><th>Attribute</th>${list.map(c => `<th>${escapeHtml(c.career)}</th>`).join('')}</tr></thead><tbody>`;
+        const attrs = [
+            { key: 'type', label: 'Type', fmt: c => escapeHtml(c.type || 'N/A') },
+            { key: 'avgSalary', label: 'Average Salary', fmt: c => escapeHtml(c.avgSalary || 'N/A') },
+            { key: 'educationRequired', label: 'Education Required', fmt: c => escapeHtml(c.educationRequired || 'N/A') }
+        ];
+        attrs.forEach(attr => {
+            table += `<tr><td class="attr-name">${attr.label}</td>`;
+            list.forEach(c => { table += `<td data-label="${attr.label}">${attr.fmt(c)}</td>`; });
+            table += `</tr>`;
+        });
+        table += `</tbody></table>`;
+        contents.innerHTML = `<div>${table}</div><div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between; align-items:center;"><div id="career-compare-result" style="flex:1; color:var(--color-text-secondary);"></div><div style="display:flex; gap:0.5rem;"><button id="clear-career-compare" class="btn-outline">Clear</button><button id="career-compare-see-result" class="btn-primary" ${list.length < 2 ? 'disabled' : ''}>See result</button></div></div>`;
+        modal.style.display = 'flex';
+        document.getElementById('clear-career-compare').addEventListener('click', () => { setCareerCompareList([]); modal.style.display = 'none'; renderCareerGrid(careersFromDB); });
+        const seeBtn = document.getElementById('career-compare-see-result');
+        const resultDiv = document.getElementById('career-compare-result');
+        if (seeBtn) seeBtn.addEventListener('click', () => {
+            const listNow = getCareerCompareList();
+            if (!listNow || listNow.length < 2) { alert('Select at least 2 careers to see a comparison result.'); return; }
+            // compute numeric avgSalary where possible
+            const vals = listNow.map(c => {
+                try { const num = parseFloat((c.avgSalary || '').toString().replace(/[^0-9.]/g, '')); return isNaN(num) ? 0 : num; } catch (e) { return 0; }
+            });
+            let topIndex = 0; let max = -Infinity;
+            vals.forEach((v,i) => { if (v > max) { max = v; topIndex = i; } });
+            // remove previous highlights
+            try { document.querySelectorAll('#career-compare-contents .compare-winner').forEach(el => el.classList.remove('compare-winner')); } catch (e) { }
+            // highlight header cell for top career
+            try {
+                const ths = contents.querySelectorAll('table.compare-table thead th');
+                if (ths && ths.length > topIndex + 1) ths[topIndex + 1].classList.add('compare-winner');
+            } catch (e) { }
+            // show summary text
+            try {
+                resultDiv.innerHTML = `<div>Top by average salary: <strong>${escapeHtml(listNow[topIndex].career)}</strong> (${escapeHtml(listNow[topIndex].avgSalary || 'N/A')})</div>`;
+            } catch (e) { resultDiv.textContent = ''; }
+        });
+    }
+
+    // Wire compare badge click
+    const careerCompareBadgeBtn = document.getElementById('career-compare-badge');
+    if (careerCompareBadgeBtn) careerCompareBadgeBtn.addEventListener('click', showCareerCompareModal);
 
     // Utility Functions
     function showModal(modal) { if (modal) modal.style.display = 'flex'; }
@@ -139,13 +279,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 animateCounter(collegesCount, 1200);
             }
         }
+        // Start/stop career-explorer specific listeners
+        if (pageId === 'career-explorer-content') {
+            try { loadCareerExplorerStats(); } catch (e) { console.error('Failed to start career explorer stats', e); }
+        } else {
+            try { cleanupCareerExplorerStats(); } catch (e) { /* ignore */ }
+        }
         if (pageId === 'colleges-content' && collegesFromDB.length > 0) {
             applyFiltersAndSort();
             try { renderCompareBar(); } catch (e) { }
         }
+        // If user attempts to open Dashboard without being logged in, show auth modal
+        if (pageId === 'dashboard-content' && !currentUser) {
+            // show login/signup modal instead of the dashboard
+            try { showModal(authContainer); } catch (e) { console.error('Failed to open auth modal', e); }
+            // ensure nav active state still highlights Dashboard link
+            navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageId));
+            return;
+        }
+
         if (pageId === 'dashboard-content' && currentUser) {
             loadDashboardData();
         }
+        // Ensure compare bar visibility is updated whenever the page changes
+        try { showCompareBarIfOnColleges(); } catch (e) { /* ignore if compare functions not ready */ }
     }
     
     // All your other functions like showModal, loadDashboardData, etc., remain here...
@@ -628,9 +785,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         contents.innerHTML = `
             <div>${table}</div>
-            <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between; align-items:center;">
+            <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:flex-end; align-items:center;">
                 <div><button id="clear-compare" class="btn-outline">Clear Comparison</button></div>
-                <div style="color:var(--color-text-muted); font-size:0.95rem;">Tip: Click "Remove" below a college name to remove it from comparison.</div>
             </div>
         `;
 
@@ -696,14 +852,23 @@ document.addEventListener('DOMContentLoaded', () => {
         list.forEach(col => {
             const chip = document.createElement('div');
             chip.className = 'compare-chip';
-            chip.innerHTML = `<span class="chip-name">${col.name}</span><button class="remove-chip" data-id="${col.id}">✕</button>`;
+            chip.innerHTML = `<span class="chip-name">${escapeHtml(col.name)}</span><button class="remove-chip" data-id="${col.id}" title="Remove ${escapeHtml(col.name)}" aria-label="Remove ${escapeHtml(col.name)}">✕</button>`;
             chipsContainer.appendChild(chip);
         });
-        // wire remove
-        chipsContainer.querySelectorAll('.remove-chip').forEach(btn => btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id;
-            setCompareListAndRefresh(getCompareList().filter(c => c.id !== id));
-        }));
+        // wire remove (click + keyboard support)
+        chipsContainer.querySelectorAll('.remove-chip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                setCompareListAndRefresh(getCompareList().filter(c => c.id !== id));
+            });
+            btn.addEventListener('keydown', (e) => {
+                // allow Enter or Space to activate the remove button for keyboard users
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.currentTarget.click();
+                }
+            });
+        });
         const nowBtn = document.getElementById('compare-now');
         if (nowBtn) nowBtn.disabled = list.length < 2;
         // show/hide depending on current page
@@ -720,7 +885,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const userQuizHistoryRef = db.collection('users').doc(currentUser.uid).collection('quizHistory').orderBy('timestamp', 'desc').limit(1);
         userQuizHistoryRef.onSnapshot(snapshot => {
             if (snapshot.empty) {
-                latestResultContent.innerHTML = '<p class="placeholder">Take a test to see your results!</p>';
+                latestResultContent.innerHTML = '<p class="placeholder">Take a test to see your results!</p><div style="margin-top:1rem;"><button id="dashboard-take-test" class="btn-primary">Take Test</button></div>';
+                // Wire CTA to lead to assessment
+                setTimeout(() => {
+                    const btn = document.getElementById('dashboard-take-test');
+                    if (btn) btn.addEventListener('click', () => { showPage('assessment-content'); });
+                }, 50);
                 if (careerMatchChart) careerMatchChart.destroy();
             } else {
                 const latestResult = snapshot.docs[0].data();
@@ -884,8 +1054,119 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const el = document.getElementById('colleges-count');
                 if (el && lastStats.colleges !== snap.size) { animateCounter(el, snap.size); lastStats.colleges = snap.size; }
+                // also update career-hero small box if present
+                try {
+                    if (collegesCountCareerBox) {
+                        const txt = `${snap.size}+`;
+                        collegesCountCareerBox.querySelector('.number').textContent = txt;
+                    }
+                } catch (e) { /* ignore */ }
             } catch (err) { console.error('Error in colleges stats listener', err); }
         }, console.error);
+    }
+
+    // Homepage counters driven by Firestore (users, careers, colleges)
+    let homepageStatsUnsub = { users: null, careers: null, colleges: null };
+    function loadHomepageStats() {
+        if (!db) return;
+        if (!homepageStatsUnsub.users) homepageStatsUnsub.users = db.collection('users').onSnapshot(snap => {
+            try {
+                const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
+                const count = nonAdmin.length;
+                if (studentsCount) animateCounter(studentsCount, count);
+            } catch (e) { console.error('Error updating homepage students stat', e); }
+        }, err => console.error('Homepage users stats listener failed', err));
+
+        if (!homepageStatsUnsub.careers) homepageStatsUnsub.careers = db.collection('careers').onSnapshot(snap => {
+            try { if (careersCount) animateCounter(careersCount, snap.size); } catch (e) { console.error('Error updating homepage careers stat', e); }
+        }, err => console.error('Homepage careers stats listener failed', err));
+
+        if (!homepageStatsUnsub.colleges) homepageStatsUnsub.colleges = db.collection('colleges').onSnapshot(snap => {
+            try { if (collegesCount) animateCounter(collegesCount, snap.size); } catch (e) { console.error('Error updating homepage colleges stat', e); }
+        }, err => console.error('Homepage colleges stats listener failed', err));
+        // One-time fetch fallback in case listeners don't fire (helpful for debugging / permissions issues)
+        try {
+            // Users count fallback
+            db.collection('users').get().then(snap => {
+                try {
+                    const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
+                    const count = nonAdmin.length;
+                    if (studentsCount) animateCounter(studentsCount, count);
+                } catch (e) { console.warn('Homepage users fallback failed', e); }
+            }).catch(err => console.warn('Homepage users fallback get() failed', err));
+
+            // Careers count fallback
+            db.collection('careers').get().then(snap => {
+                try { if (careersCount) animateCounter(careersCount, snap.size); } catch (e) { console.warn('Homepage careers fallback failed', e); }
+            }).catch(err => console.warn('Homepage careers fallback get() failed', err));
+
+            // Colleges count fallback
+            db.collection('colleges').get().then(snap => {
+                try { if (collegesCount) animateCounter(collegesCount, snap.size); } catch (e) { console.warn('Homepage colleges fallback failed', e); }
+            }).catch(err => console.warn('Homepage colleges fallback get() failed', err));
+        } catch (e) { console.warn('Homepage stats fallback aborted', e); }
+    }
+
+    function cleanupHomepageStats() {
+        try {
+            if (homepageStatsUnsub.users) { homepageStatsUnsub.users(); homepageStatsUnsub.users = null; }
+            if (homepageStatsUnsub.careers) { homepageStatsUnsub.careers(); homepageStatsUnsub.careers = null; }
+            if (homepageStatsUnsub.colleges) { homepageStatsUnsub.colleges(); homepageStatsUnsub.colleges = null; }
+        } catch (e) { console.error('Error cleaning up homepage stats', e); }
+    }
+
+    // Single listener for career-explorer header stats
+    // Computes: total career paths, government jobs (type === 'government'), and emerging fields (avgSalary > 20 LPA)
+    let explorerStatsUnsub = { careers: null };
+    function parseAvgSalaryToLPA(raw) {
+        // raw may be a number (LPA) or a string like "₹4-25 LPA" or "20 LPA". Return numeric LPA (highest number found) or 0.
+        if (raw == null) return 0;
+        if (typeof raw === 'number') return raw;
+        try {
+            const s = raw.toString();
+            const matches = s.match(/\d+(?:\.\d+)?/g);
+            if (!matches || matches.length === 0) return 0;
+            // convert to numbers and take the largest (handles ranges like 4-25)
+            const nums = matches.map(m => parseFloat(m)).filter(n => !isNaN(n));
+            if (nums.length === 0) return 0;
+            return Math.max(...nums);
+        } catch (e) { return 0; }
+    }
+
+    function loadCareerExplorerStats() {
+        if (!db) return;
+        if (explorerStatsUnsub.careers) return; // already listening
+        explorerStatsUnsub.careers = db.collection('careers').onSnapshot(snap => {
+            try {
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const total = docs.length;
+                // Count government-type careers (case-insensitive match)
+                const governmentCount = docs.filter(d => (d.type || '').toString().toLowerCase() === 'government').length;
+                // Emerging fields: avgSalary numeric (LPA) > 20
+                const emergingCount = docs.filter(d => {
+                    const val = parseAvgSalaryToLPA(d.avgSalary);
+                    return val > 20;
+                }).length;
+
+                if (studentsCountCareerBox) {
+                    try { studentsCountCareerBox.querySelector('.number').textContent = `${total}+`; } catch (e) { studentsCountCareerBox.textContent = `${total}+`; }
+                }
+                if (careersCountCareerBox) {
+                    try { careersCountCareerBox.querySelector('.number').textContent = `${governmentCount}+`; } catch (e) { careersCountCareerBox.textContent = `${governmentCount}+`; }
+                }
+                if (collegesCountCareerBox) {
+                    try { collegesCountCareerBox.querySelector('.number').textContent = `${emergingCount}+`; } catch (e) { collegesCountCareerBox.textContent = `${emergingCount}+`; }
+                }
+            } catch (e) { console.error('Error processing career-explorer stats', e); }
+        }, err => { console.error('Explorer careers stats listener failed', err); });
+    }
+
+    function cleanupCareerExplorerStats() {
+        try {
+            if (explorerStatsUnsub.students) { explorerStatsUnsub.students(); explorerStatsUnsub.students = null; }
+            if (explorerStatsUnsub.careers) { explorerStatsUnsub.careers(); explorerStatsUnsub.careers = null; }
+            if (explorerStatsUnsub.colleges) { explorerStatsUnsub.colleges(); explorerStatsUnsub.colleges = null; }
+        } catch (err) { console.error('Error cleaning up explorer stats', err); }
     }
 
     function cleanupDynamicStats() {
@@ -1016,12 +1297,16 @@ async function generateAIResponse(userMessage) {
 
     careerFilterButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // toggle active class for UI
             careerFilterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            const filter = button.dataset.filter;
-            careerCards.forEach(card => {
-                if (filter === 'all' || card.dataset.category === filter) {
-                    card.style.display = 'block';
+            const filter = (button.dataset.filter || 'all').toString().toLowerCase();
+            // query current cards at runtime
+            const currentCards = document.querySelectorAll('#career-grid-container .career-card');
+            currentCards.forEach(card => {
+                const cat = (card.dataset.category || '').toString().toLowerCase();
+                if (filter === 'all' || cat === filter) {
+                    card.style.display = '';
                 } else {
                     card.style.display = 'none';
                 }
@@ -1081,7 +1366,9 @@ async function generateAIResponse(userMessage) {
     // If you still want the redirect, you can add the setTimeout code back here.
     
     loadCollegesFromFirestore();
+    try { loadCareersFromFirestore(); } catch (e) { console.error('Failed to load careers', e); }
     try { loadDynamicStats(); } catch (e) { console.error('Failed to start dynamic stats', e); }
     try { loadTestimonialsForHomepage(); } catch (e) { console.error('Failed to start testimonials listener', e); }
+    try { loadHomepageStats(); } catch (e) { console.error('Failed to start homepage stats', e); }
     showPage('homepage-content'); // Start on the homepage
 });

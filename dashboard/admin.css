@@ -93,6 +93,13 @@ body {
 }
 .admin-button.primary { background-image: var(--blue-gradient); }
 .admin-button.primary:hover { box-shadow: 0 4px 15px rgba(74, 71, 226, 0.3); transform: translateY(-2px); }
+/* Visible default for non-primary admin buttons so 'Cancel' doesn't look disabled */
+.admin-button:not(.primary) {
+    background-color: #f3f4f6; /* light gray */
+    color: var(--text-primary);
+    box-shadow: none;
+}
+.admin-button:not(.primary):hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
 .error-message { color: var(--error-color); margin-top: 1rem; min-height: 1.2rem; }
 
 /* --- Dashboard View --- */

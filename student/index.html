@@ -31,12 +31,13 @@
                 <a onclick="showPage('ai-counselor-content')" data-page="ai-counselor-content">AI Counselor</a>
                 <a href="resume.html" target="_blank">Resume Builder</a>
             </div>
-            <div id="user-auth-section">
+            <div id="user-auth-section" class="user-auth-section-desktop">
                 <button class="btn-primary" id="login-signup-btn">Login / Signup</button>
             </div>
             <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu">
                 <i class="fas fa-bars"></i>
             </button>
+            <div class="user-auth-section-mobile" style="display:none;"></div>
         </div>
     </nav>
 
@@ -451,6 +452,7 @@
                             <div class="number">25+</div>
                             <div class="label">Emerging Fields</div>
                         </div>
+                        <div style="margin-left:1rem; display:flex; align-items:center;"><button id="career-compare-badge" class="btn-outline">Compare</button></div>
                     </div>
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
