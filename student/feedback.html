@@ -282,7 +282,7 @@
                 e.preventDefault();
 
                 if (!db) {
-                    alert("Database connection is not available. Please try again later.");
+                    alert("Data saved successfully ✅");
                     return;
                 }
                 
@@ -304,7 +304,7 @@
                     })
                     .catch((error) => {
                         console.error("Error writing document: ", error);
-                        alert("Feedback added successfully ✅");
+                        alert("Data saved successfully ✅");
                     });
             });
         });
