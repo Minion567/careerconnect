@@ -127,9 +127,9 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
-  color: white;
-  background-color: transparent;
+  border: 0px solid white;
+  color: rgb(27, 21, 218); /* This is the initial text color */
+  background-color: rgb(237, 237, 240);
   padding: 1rem 2rem;
   font-size: 1.125rem;
   border-radius: 0.5rem;
@@ -137,10 +137,45 @@ a {
   transition: all 250ms ease-out;
   cursor: pointer;
 }
-.btn-outline:hover {
-  background-color: white;
-  color: var(--color-primary);
-  color:white;
+.btn-outline:hover{
+  background-color:blue !important;
+  color:white !important;
+}
+.compare-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid white;
+  color: rgb(27, 21, 218); /* This is the initial text color */
+  background-color: rgb(237, 237, 240);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+  cursor: pointer;
+}
+.compare-btn:hover {
+  background-color: rgb(7, 7, 245);
+  color: white; /* Add this line to change the text color on hover */
+}
+.btn-outline{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid white;
+  color: rgb(27, 21, 218); /* This is the initial text color */
+  background-color: rgb(237, 237, 240);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+  cursor: pointer;
+}
+.btn-outlin:hover {
+  background-color: rgb(7, 7, 245);
+  color: white; /* Add this line to change the text color on hover */
 }
 
 .btn-outline-light {
@@ -155,10 +190,21 @@ a {
   border-radius: 0.5rem;
   transition: all 250ms ease-out;
   cursor: pointer;
-  background-color: white;
+
 }
-.btn-outline-light:hover {
-  background-color: var(--color-surface);
+.btn-outline:hover {
+  background-color: rgba(72, 72, 213, 0.345);
+  color:white;
+}
+
+.compare-winner {
+  background-color: rgba(34,197,94,0.08); 
+  border-left: 4px solid rgba(34,197,94,0.25);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+  cursor: pointer;
 }
 
 .card {
@@ -292,9 +338,7 @@ a {
   color: var(--color-text-primary);
 }
 
-/* ======================================================================== */
-/* ! --- HOMEPAGE STYLES --- */
-/* ======================================================================== */
+
 .hero-section {
   position: relative;
   background: linear-gradient(

@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let currentUser = null;
+    // Stats unsubscribe handles (module-level)
+    let statsUnsubs = { users: null, careers: null, colleges: null };
+    // Last seen stats to prevent re-animation jitter
+    let lastStats = { students: null, careers: null, colleges: null };
     let collegesFromDB = [];
     let uniqueCities = [];
     let latestQuizResultForSignup = null;
@@ -8,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let careerMatchChart = null; // To hold the chart instance
 
     // --- DOM ELEMENT SELECTORS (ALL PAGES) ---
-    const userAuthSection = document.getElementById('user-auth-section');
     const pages = document.querySelectorAll('.page-content');
     const navLinks = document.querySelectorAll('#main-nav-links a');
     const hamburgerMenu = document.getElementById('hamburger-menu');
@@ -43,10 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentsCount = document.getElementById('students-count');
     const careersCount = document.getElementById('careers-count');
     const collegesCount = document.getElementById('colleges-count');
+    // Career-hero stat boxes (the larger header numbers on career-explorer page)
+    const studentsCountCareerBox = document.getElementById('students-count-career');
+    const careersCountCareerBox = document.getElementById('careers-count-career');
+    const collegesCountCareerBox = document.getElementById('colleges-count-career');
 
     // Career Explorer Page Elements
     const careerFilterButtons = document.querySelectorAll('.filter-btn');
-    const careerCards = document.querySelectorAll('#career-grid-container .career-card');
+    // DO NOT query career cards once here; they are dynamically rendered. Use runtime queries when filtering.
     const careerSearchInput = document.getElementById('career-search-input');
 
     // Colleges Page Elements
@@ -71,114 +78,115 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatWindow = document.getElementById('chat-window');
 
     // --- STATIC DATA ---
-    // NOTE: SAMPLE_COLLEGES removed — application now relies solely on Firestore for colleges data.
+    // 12 personality-oriented assessment questions. Each option assigns weights to
+    // the four streams used by the existing quiz logic: Science, Arts, Commerce, Vocational.
     const questions = [
         {
-            text: "When you have free time, you prefer to:",
+            text: 'When solving a problem, you prefer to:',
             options: [
-                { text: "Build or fix things", weights: { Vocational: 2, Science: 1 } },
-                { text: "Read a book or write", weights: { Arts: 2 } },
-                { text: "Organize your room or plan a budget", weights: { Commerce: 2 } },
-                { text: "Watch a documentary or solve puzzles", weights: { Science: 2 } }
+                { text: 'Break it down logically and use formulas', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Consider people and feelings involved', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Look for cost/benefit and practical outcomes', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Try a hands-on prototype or experiment', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "Which subject do you enjoy most?",
+            text: 'You get energy from:',
             options: [
-                { text: "Physics or Chemistry", weights: { Science: 2 } },
-                { text: "History or Literature", weights: { Arts: 2 } },
-                { text: "Mathematics or Economics", weights: { Commerce: 2, Science: 1 } },
-                { text: "Computer Science or a workshop class", weights: { Vocational: 2, Science: 1 } }
+                { text: 'Learning technical systems and how things work', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Creating stories, art, or music', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Negotiating deals or organizing projects', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Working with tools or physical materials', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "How do you prefer to solve a problem?",
+            text: 'Your preferred learning style is:',
             options: [
-                { text: "By analyzing data logically", weights: { Science: 2, Commerce: 1 } },
-                { text: "By thinking creatively", weights: { Arts: 2 } },
-                { text: "By collaborating and managing", weights: { Commerce: 2 } },
-                { text: "By taking a hands-on approach", weights: { Vocational: 2 } }
+                { text: 'Theoretical and conceptual', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Observational and reflective', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Case-based and practical business examples', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Hands-on, learn-by-doing', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "Which work environment sounds appealing?",
+            text: 'In a team, you often act as the:',
             options: [
-                { text: "A laboratory or a tech company", weights: { Science: 2 } },
-                { text: "An art studio or a law firm", weights: { Arts: 2 } },
-                { text: "A bank or my own startup", weights: { Commerce: 2 } },
-                { text: "A workshop or working on-site", weights: { Vocational: 2 } }
+                { text: 'Analyst / specialist', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Communicator / storyteller', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Coordinator / planner', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Implementer / builder', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "When tackling a big project, you most enjoy:",
+            text: 'You judge success by:',
             options: [
-                { text: "Designing experiments and testing ideas", weights: { Science: 2 } },
-                { text: "Crafting the narrative or visuals", weights: { Arts: 2 } },
-                { text: "Planning the budget and timeline", weights: { Commerce: 2 } },
-                { text: "Building prototypes and practical solutions", weights: { Vocational: 2 } }
+                { text: 'Accuracy, correctness, and evidence', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Expression, aesthetics, and impact', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Profitability, efficiency, and results', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Practical usefulness and durability', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "Which of these activities energizes you the most?",
+            text: 'You enjoy tasks that are:',
             options: [
-                { text: "Solving logic puzzles or coding challenges", weights: { Science: 2 } },
-                { text: "Writing, performing, or designing", weights: { Arts: 2 } },
-                { text: "Negotiating or selling ideas", weights: { Commerce: 2 } },
-                { text: "Hands-on repair or craftsmanship", weights: { Vocational: 2 } }
+                { text: 'Abstract and logical', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Open-ended and interpretive', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Structured with clear objectives', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Tactile and kinaesthetic', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "When choosing a career, your top priority is:",
+            text: 'When you face a challenge, you first:',
             options: [
-                { text: "Intellectual challenge and discovery", weights: { Science: 2 } },
-                { text: "Creative freedom and expression", weights: { Arts: 2 } },
-                { text: "Financial stability and growth", weights: { Commerce: 2 } },
-                { text: "Practical skills and independence", weights: { Vocational: 2 } }
+                { text: 'Gather data and run experiments', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Reflect on meaning and context', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Check budgets and stakeholder needs', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Sketch or prototype a quick solution', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "How do you prefer to learn new things?",
+            text: 'Which description fits you best?',
             options: [
-                { text: "Through experiments and data", weights: { Science: 2 } },
-                { text: "By reading and reflecting", weights: { Arts: 2 } },
-                { text: "By watching case studies and examples", weights: { Commerce: 2 } },
-                { text: "By doing practical, hands-on work", weights: { Vocational: 2 } }
+                { text: 'Precise, curious, methodical', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Imaginative, empathetic, expressive', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Practical, strategic, organised', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Resourceful, hands-on, craft-oriented', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "Which of these problem types do you enjoy most?",
+            text: 'If you had a free project, you would pick:',
             options: [
-                { text: "Technical puzzles or experiments", weights: { Science: 2 } },
-                { text: "Ambiguous, open-ended creative briefs", weights: { Arts: 2 } },
-                { text: "Business strategy and optimization", weights: { Commerce: 2 } },
-                { text: "Fixing machines or constructing things", weights: { Vocational: 2 } }
+                { text: 'Build a data tool or experiment', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Write a short film or design a poster', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Start a small online business', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Make furniture or restore a gadget', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "What kind of team role do you prefer?",
+            text: 'You prefer feedback that is:',
             options: [
-                { text: "Researcher / Analyst", weights: { Science: 2 } },
-                { text: "Creative lead / Storyteller", weights: { Arts: 2 } },
-                { text: "Manager / Coordinator", weights: { Commerce: 2 } },
-                { text: "Technician / Builder", weights: { Vocational: 2 } }
+                { text: 'Technical and detail-oriented', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Emotional and narrative-based', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Business-focused and measurable', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Practical tips you can apply immediately', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "How comfortable are you with numbers and statistics?",
+            text: 'Your ideal workplace rhythm is:',
             options: [
-                { text: "Very comfortable — I enjoy numbers", weights: { Science: 1, Commerce: 2 } },
-                { text: "I use them sometimes for research or art projects", weights: { Arts: 1, Science: 1 } },
-                { text: "I use them regularly for planning and finance", weights: { Commerce: 2 } },
-                { text: "I prefer practical measurements and hands-on metrics", weights: { Vocational: 1 } }
+                { text: 'Deep focused sprints (research/code)', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Flexible creative bursts', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Fast-paced, goal-driven days', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Hands-on workshops and building', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         },
         {
-            text: "Which outcome matters most to you in a job?",
+            text: 'What matters most when choosing a career?',
             options: [
-                { text: "Contributing to scientific knowledge or tech innovation", weights: { Science: 2 } },
-                { text: "Creating meaningful art or stories", weights: { Arts: 2 } },
-                { text: "Driving business results and growth", weights: { Commerce: 2 } },
-                { text: "Making useful tangible products or services", weights: { Vocational: 2 } }
+                { text: 'Intellectual challenge and growth', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Meaningful expression or social impact', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Stability and earning potential', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Practical skill and autonomy', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
             ]
         }
     ];
@@ -186,6 +194,142 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===================================================================
     // ! --- ALL FUNCTIONS DEFINED HERE FIRST ---
     // ===================================================================
+
+    // --- Careers: load from Firestore for student-facing explorer ---
+    let careersFromDB = [];
+    function loadCareersFromFirestore() {
+        if (!db) return;
+        db.collection('careers').orderBy('career').get().then(snapshot => {
+            careersFromDB = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderCareerGrid(careersFromDB);
+        }).catch(err => {
+            console.error('Failed to load careers for explorer', err);
+        });
+    }
+
+    function getCareerCompareList() {
+        try { return JSON.parse(localStorage.getItem('careerCompare') || '[]'); } catch (e) { return []; }
+    }
+    function setCareerCompareList(list) { localStorage.setItem('careerCompare', JSON.stringify(list)); renderCareerCompareBadge(); }
+    function setCareerCompareListAndRefresh(list) { setCareerCompareList(list); renderCareerGrid(careersFromDB); }
+
+    function toggleCompareCareer(career) {
+        const list = getCareerCompareList();
+        const exists = list.find(i => i.id === career.id);
+        if (exists) {
+            const newList = list.filter(i => i.id !== career.id);
+            setCareerCompareListAndRefresh(newList);
+        } else {
+            if (list.length >= 3) return alert('You can compare up to 3 careers only.');
+            list.push(career);
+            setCareerCompareListAndRefresh(list);
+        }
+    }
+
+    function renderCareerCompareBadge() {
+        const el = document.getElementById('career-compare-badge');
+        if (!el) return;
+        const count = getCareerCompareList().length;
+        el.textContent = count > 0 ? `Compare (${count})` : 'Compare';
+    }
+
+    function renderCareerGrid(list) {
+        const container = document.getElementById('career-grid-container');
+        if (!container) return;
+        // If no dynamic data, keep existing static markup
+        if (!list || list.length === 0) return;
+        container.innerHTML = '';
+        const compareList = getCareerCompareList();
+        list.forEach(c => {
+            const card = document.createElement('div');
+            const category = (c.type||'').toString().toLowerCase();
+            card.className = 'career-card';
+            card.dataset.category = category;
+            card.innerHTML = `
+                <div class="image-wrapper"><img src="${c.image||'https://via.placeholder.com/400x200'}" class="career-image" alt="${escapeHtml(c.career)}"></div>
+                <div class="content">
+                    <h3>${escapeHtml(c.career)}</h3>
+                    <p class="description">${escapeHtml((c.description||'').slice(0,250))}</p>
+                    <div class="info-grid">
+                        <div class="info-item"><div class="label">Salary</div><div class="value">${escapeHtml(c.avgSalary || 'N/A')}</div></div>
+                        <div class="info-item"><div class="label">Education</div><div class="value dark">${escapeHtml(c.educationRequired || 'N/A')}</div></div>
+                    </div>
+                    <div class="career-meta"><div class="value job-type">${escapeHtml(c.type || '')}</div></div>
+                    <div class="career-card-actions"><button class="btn-outline career-compare-btn ${compareList.some(x=>x.id===c.id)?'selected':''}" data-career='${JSON.stringify({ id: c.id, career: c.career, avgSalary: c.avgSalary, educationRequired: c.educationRequired, type: c.type })}'>${compareList.some(x=>x.id===c.id)?'Selected':'Compare'}</button></div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        // wire compare buttons
+        document.querySelectorAll('.career-compare-btn').forEach(btn => btn.addEventListener('click', (e) => {
+            try { const payload = JSON.parse(e.currentTarget.dataset.career); toggleCompareCareer(payload); } catch (err) { console.error('Failed to parse career payload', err); }
+        }));
+    }
+
+    function ensureCareerCompareModal() {
+        if (document.getElementById('career-compare-modal')) return;
+        const modal = document.createElement('div');
+        modal.id = 'career-compare-modal';
+        modal.className = 'modal-wrapper';
+        modal.style.display = 'none';
+        modal.innerHTML = `<div class="modal-box"><button class="close-btn" id="close-career-compare"><i class="fa-solid fa-times"></i></button><h2 style="text-align:center;">Compare Careers</h2><div id="career-compare-contents"></div></div>`;
+        document.body.appendChild(modal);
+        document.getElementById('close-career-compare').addEventListener('click', () => { modal.style.display = 'none'; });
+    }
+
+    function showCareerCompareModal() {
+        ensureCareerCompareModal();
+        const modal = document.getElementById('career-compare-modal');
+        const contents = document.getElementById('career-compare-contents');
+        const list = getCareerCompareList();
+        if (!list || list.length === 0) {
+            contents.innerHTML = '<p style="text-align:center;">No careers selected for comparison.</p>';
+            modal.style.display = 'flex';
+            return;
+        }
+        let table = `<table class="compare-table"><thead><tr><th>Attribute</th>${list.map(c => `<th>${escapeHtml(c.career)}</th>`).join('')}</tr></thead><tbody>`;
+        const attrs = [
+            { key: 'type', label: 'Type', fmt: c => escapeHtml(c.type || 'N/A') },
+            { key: 'avgSalary', label: 'Average Salary', fmt: c => escapeHtml(c.avgSalary || 'N/A') },
+            { key: 'educationRequired', label: 'Education Required', fmt: c => escapeHtml(c.educationRequired || 'N/A') }
+        ];
+        attrs.forEach(attr => {
+            table += `<tr><td class="attr-name">${attr.label}</td>`;
+            list.forEach(c => { table += `<td data-label="${attr.label}">${attr.fmt(c)}</td>`; });
+            table += `</tr>`;
+        });
+        table += `</tbody></table>`;
+        contents.innerHTML = `<div>${table}</div><div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between; align-items:center;"><div id="career-compare-result" style="flex:1; color:var(--color-text-secondary);"></div><div style="display:flex; gap:0.5rem;"><button id="clear-career-compare" class="btn-outline">Clear</button><button id="career-compare-see-result" class="btn-primary" ${list.length < 2 ? 'disabled' : ''}>See result</button></div></div>`;
+        modal.style.display = 'flex';
+        document.getElementById('clear-career-compare').addEventListener('click', () => { setCareerCompareList([]); modal.style.display = 'none'; renderCareerGrid(careersFromDB); });
+        const seeBtn = document.getElementById('career-compare-see-result');
+        const resultDiv = document.getElementById('career-compare-result');
+        if (seeBtn) seeBtn.addEventListener('click', () => {
+            const listNow = getCareerCompareList();
+            if (!listNow || listNow.length < 2) { alert('Select at least 2 careers to see a comparison result.'); return; }
+            // compute numeric avgSalary where possible
+            const vals = listNow.map(c => {
+                try { const num = parseFloat((c.avgSalary || '').toString().replace(/[^0-9.]/g, '')); return isNaN(num) ? 0 : num; } catch (e) { return 0; }
+            });
+            let topIndex = 0; let max = -Infinity;
+            vals.forEach((v,i) => { if (v > max) { max = v; topIndex = i; } });
+            // remove previous highlights
+            try { document.querySelectorAll('#career-compare-contents .compare-winner').forEach(el => el.classList.remove('compare-winner')); } catch (e) { }
+            // highlight header cell for top career
+            try {
+                const ths = contents.querySelectorAll('table.compare-table thead th');
+                if (ths && ths.length > topIndex + 1) ths[topIndex + 1].classList.add('compare-winner');
+            } catch (e) { }
+            // show summary text
+            try {
+                resultDiv.innerHTML = `<div>Top by average salary: <strong>${escapeHtml(listNow[topIndex].career)}</strong> (${escapeHtml(listNow[topIndex].avgSalary || 'N/A')})</div>`;
+            } catch (e) { resultDiv.textContent = ''; }
+        });
+    }
+
+    // Wire compare badge click
+    const careerCompareBadgeBtn = document.getElementById('career-compare-badge');
+    if (careerCompareBadgeBtn) careerCompareBadgeBtn.addEventListener('click', showCareerCompareModal);
 
     // Utility Functions
     function showModal(modal) { if (modal) modal.style.display = 'flex'; }
@@ -225,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCarousel();
     }
 
-    // SPA Navigation Function
     window.showPage = function (pageId) {
         pages.forEach(page => page.classList.remove('active'));
         const targetPage = document.getElementById(pageId);
@@ -236,6 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.scrollTo(0, 0);
 
+
+
         if (pageId === 'homepage-content') {
             if (studentsCount && studentsCount.textContent === "0") {
                 animateCounter(studentsCount, 25847);
@@ -243,14 +388,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 animateCounter(collegesCount, 1200);
             }
         }
+        // Start/stop career-explorer specific listeners
+        if (pageId === 'career-explorer-content') {
+            try { loadCareerExplorerStats(); } catch (e) { console.error('Failed to start career explorer stats', e); }
+        } else {
+            try { cleanupCareerExplorerStats(); } catch (e) { /* ignore */ }
+        }
         if (pageId === 'colleges-content' && collegesFromDB.length > 0) {
             applyFiltersAndSort();
             try { renderCompareBar(); } catch (e) { }
         }
+        // If user attempts to open Dashboard without being logged in, show auth modal
+        if (pageId === 'dashboard-content' && !currentUser) {
+            // show login/signup modal instead of the dashboard
+            try { showModal(authContainer); } catch (e) { console.error('Failed to open auth modal', e); }
+            // ensure nav active state still highlights Dashboard link
+            navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageId));
+            return;
+        }
+
         if (pageId === 'dashboard-content' && currentUser) {
             loadDashboardData();
         }
+        // Ensure compare bar visibility is updated whenever the page changes
+        try { showCompareBarIfOnColleges(); } catch (e) { /* ignore if compare functions not ready */ }
     }
+    
+    // All your other functions like showModal, loadDashboardData, etc., remain here...
 
     // ===================================================================
     // ! --- MAIN APP LOGIC ---
@@ -294,20 +458,28 @@ document.addEventListener('DOMContentLoaded', () => {
             sessionStorage.setItem('feedbackCardDismissed', 'true');
         });
     }
+
     // Authentication
     auth.onAuthStateChanged(user => {
+        const authSections = document.querySelectorAll('.user-auth-section-desktop, .user-auth-section-mobile');
+
         if (user) {
             currentUser = { uid: user.uid, email: user.email };
             db.collection('users').doc(user.uid).get().then(doc => {
                 if (doc.exists) {
                     currentUser.name = doc.data().name;
-                    userAuthSection.innerHTML = `
+                    const loggedInHTML = `
                         <span id="user-display-name">Hi, ${currentUser.name.split(' ')[0]}</span>
-                        <button class="btn-outline-light" id="logout-btn">Logout</button>
+                        <button class="btn-outline-light logout-btn">Logout</button>
                     `;
-                    document.getElementById('logout-btn').addEventListener('click', () => {
-                        auth.signOut();
+                    authSections.forEach(section => section.innerHTML = loggedInHTML);
+                    
+                    document.querySelectorAll('.logout-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            auth.signOut();
+                        });
                     });
+
                     showPage('dashboard-content');
                 } else { auth.signOut(); }
             }).catch(err => {
@@ -316,9 +488,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             currentUser = null;
-            userAuthSection.innerHTML = `<button class="btn-primary" id="login-signup-btn-nav">Login / Signup</button>`;
-            const loginBtn = document.getElementById('login-signup-btn-nav');
-            if (loginBtn) loginBtn.addEventListener('click', () => showModal(authContainer));
+            const loggedOutHTML = `<button class="btn-primary login-signup-btn">Login / Signup</button>`;
+            authSections.forEach(section => section.innerHTML = loggedOutHTML);
+            
+            document.querySelectorAll('.login-signup-btn').forEach(btn => {
+                btn.addEventListener('click', () => showModal(authContainer));
+            });
+
             showPage('homepage-content');
         }
     });
@@ -354,8 +530,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(() => hideModal(authContainer))
             .catch(error => loginError.textContent = error.message);
     }
-
-    // Quiz Logic
     let currentQuestionIndex = 0;
     let scores = { Science: 0, Arts: 0, Commerce: 0, Vocational: 0 };
     function startQuiz() {
@@ -417,11 +591,11 @@ document.addEventListener('DOMContentLoaded', () => {
         showModal(resultContainer);
     }
 
-    // Colleges Logic
+
     async function loadCollegesFromFirestore() {
         try {
             const snapshot = await db.collection('colleges').get();
-            // If snapshot is empty, show an explicit empty-state and return
+
             if (!snapshot || !snapshot.docs || snapshot.docs.length === 0) {
                 collegesFromDB = [];
                 uniqueCities = [];
@@ -720,9 +894,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         contents.innerHTML = `
             <div>${table}</div>
-            <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:space-between; align-items:center;">
+            <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:flex-end; align-items:center;">
                 <div><button id="clear-compare" class="btn-outline">Clear Comparison</button></div>
-                <div style="color:var(--color-text-muted); font-size:0.95rem;">Tip: Click "Remove" below a college name to remove it from comparison.</div>
             </div>
         `;
 
@@ -788,21 +961,27 @@ document.addEventListener('DOMContentLoaded', () => {
         list.forEach(col => {
             const chip = document.createElement('div');
             chip.className = 'compare-chip';
-            chip.innerHTML = `<span class="chip-name">${col.name}</span><button class="remove-chip" data-id="${col.id}">✕</button>`;
+            chip.innerHTML = `<span class="chip-name">${escapeHtml(col.name)}</span><button class="remove-chip" data-id="${col.id}" title="Remove ${escapeHtml(col.name)}" aria-label="Remove ${escapeHtml(col.name)}">✕</button>`;
             chipsContainer.appendChild(chip);
         });
-        // wire remove
-        chipsContainer.querySelectorAll('.remove-chip').forEach(btn => btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id;
-            setCompareListAndRefresh(getCompareList().filter(c => c.id !== id));
-        }));
+        chipsContainer.querySelectorAll('.remove-chip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.currentTarget.dataset.id;
+                setCompareListAndRefresh(getCompareList().filter(c => c.id !== id));
+            });
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.currentTarget.click();
+                }
+            });
+        });
         const nowBtn = document.getElementById('compare-now');
         if (nowBtn) nowBtn.disabled = list.length < 2;
-        // show/hide depending on current page
         showCompareBarIfOnColleges();
+
     }
 
-    // Render initially
     try { renderCompareBar(); } catch (e) { /* ignore */ }
 
     // Dashboard Logic
@@ -811,7 +990,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const userQuizHistoryRef = db.collection('users').doc(currentUser.uid).collection('quizHistory').orderBy('timestamp', 'desc').limit(1);
         userQuizHistoryRef.onSnapshot(snapshot => {
             if (snapshot.empty) {
-                latestResultContent.innerHTML = '<p class="placeholder">Take a test to see your results!</p>';
+                latestResultContent.innerHTML = '<p class="placeholder">Take a test to see your results!</p><div style="margin-top:1rem;"><button id="dashboard-take-test" class="btn-primary">Take Test</button></div>';
+                // Wire CTA to lead to assessment
+                setTimeout(() => {
+                    const btn = document.getElementById('dashboard-take-test');
+                    if (btn) btn.addEventListener('click', () => { showPage('assessment-content'); });
+                }, 50);
                 if (careerMatchChart) careerMatchChart.destroy();
             } else {
                 const latestResult = snapshot.docs[0].data();
@@ -874,9 +1058,231 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 20);
     }
+    // --- Testimonials (homepage) ---
+    let testimonialUnsub = null;
+    function renderTestimonialsList(docs) {
+        const container = document.getElementById('carousel-container');
+        const indicators = document.getElementById('carousel-indicators');
+        if (!container) return;
+        container.innerHTML = '';
+        if (indicators) indicators.innerHTML = '';
+        if (!docs || docs.length === 0) {
+            container.innerHTML = `<div class="carousel-slide"><div class="card story-card"><p>No testimonials yet.</p></div></div>`;
+            return;
+        }
+        docs.forEach((doc, i) => {
+            const t = doc.data();
+            const img = t.img || 'https://via.placeholder.com/120';
+            const name = t.name || 'Anonymous';
+            const message = t.message || t.text || '';
+            const rating = t.rating || 0;
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `
+                <div class="card story-card">
+                    <img src="${img}" class="story-image" alt="${name}">
+                    <div>
+                        <div class="story-rating">${'★'.repeat(rating)}${rating ? '' : ''}</div>
+                        <blockquote>${escapeHtml(message)}</blockquote>
+                        <div class="student-name">${escapeHtml(name)}</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(slide);
+            if (indicators) {
+                const btn = document.createElement('button'); btn.className = 'indicator-btn'; if (i === 0) btn.classList.add('active'); btn.onclick = () => goToSlide(i);
+                indicators.appendChild(btn);
+            }
+        });
+        // restart auto-rotate
+        currentSlide = 0; updateCarousel();
+    }
 
-    // AI Counselor Logic
-    // === Send message to Gemini AI ===
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function loadTestimonialsForHomepage() {
+        if (testimonialUnsub) return;
+        try {
+            testimonialUnsub = db.collection('testimonials').where('visible', '==', true).orderBy('createdAt', 'desc').onSnapshot(snap => {
+                renderTestimonialsList(snap.docs);
+            }, err => {
+                console.error('Testimonials listener failed', err);
+                // Show a helpful message in the carousel so the public site indicates what's wrong
+                const container = document.getElementById('carousel-container');
+                if (container) {
+                    const errMsg = err && err.message ? err.message : 'Permission denied or network blocked';
+                    let extra = 'Please ensure Firestore rules allow public reads on <code>/testimonials</code> or disable ad-blockers.';
+                    // If Firestore tells us a composite index is required, include the console link to create it.
+                    const indexLink = 'https://console.firebase.google.com/v1/r/project/careeradvisorhackathon/firestore/indexes?create_composite=Cltwcm9qZWN0cy9jYXJlZXJhZHZpc29yaGFja2F0aG9uL2RhdGFiYXNlcy8oZGVmYXVsdCkvY29sbGVjdGlvbkdyb3Vwcy90ZXN0aW1vbmlhbHMvaW5kZXhlcy9fEAEaCwoHdmlzaWJsZRABGg0KCWNyZWF0ZWRBdBACGgwKCF9fbmFtZV9fEAI';
+                    if (errMsg.indexOf('requires an index') !== -1 || errMsg.indexOf('index') !== -1) {
+                        extra += ` You can create the required index <a href="${indexLink}" target="_blank" rel="noopener">here</a>.`;
+                    }
+                    container.innerHTML = `<div class="carousel-slide"><div class="card story-card"><p style="color:#a00;">Unable to load testimonials: ${escapeHtml(errMsg)}.</p><p>${extra}</p></div></div>`;
+                }
+            });
+        } catch (err) { console.error('Failed to attach testimonials listener', err); }
+    }
+
+    // --- Real-time Stats (listeners) ---
+    function loadDynamicStats() {
+        // avoid duplicate listeners
+        if (statsUnsubs.users || statsUnsubs.careers || statsUnsubs.colleges) return;
+
+        // Users count (exclude admin)
+        statsUnsubs.users = db.collection('users').onSnapshot(snap => {
+            try {
+                const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
+                const count = nonAdmin.length;
+                const el = document.getElementById('students-count');
+                if (el && lastStats.students !== count) { animateCounter(el, count); lastStats.students = count; }
+            } catch (err) { console.error('Error in users stats listener', err); }
+        }, console.error);
+
+        // Career paths (unique recommendedStream from any user's quizHistory)
+        statsUnsubs.careers = db.collectionGroup('quizHistory').onSnapshot(snap => {
+            try {
+                const unique = new Set();
+                snap.forEach(doc => {
+                    const rs = (doc.data && doc.data().recommendedStream) ? doc.data().recommendedStream : null;
+                    if (rs) unique.add(rs);
+                });
+                const el = document.getElementById('careers-count');
+                if (el && lastStats.careers !== unique.size) { animateCounter(el, unique.size); lastStats.careers = unique.size; }
+            } catch (err) { console.error('Error in careers stats listener', err); }
+        }, console.error);
+
+        // Colleges count
+        statsUnsubs.colleges = db.collection('colleges').onSnapshot(snap => {
+            try {
+                const el = document.getElementById('colleges-count');
+                if (el && lastStats.colleges !== snap.size) { animateCounter(el, snap.size); lastStats.colleges = snap.size; }
+                // also update career-hero small box if present
+                try {
+                    if (collegesCountCareerBox) {
+                        const txt = `${snap.size}+`;
+                        collegesCountCareerBox.querySelector('.number').textContent = txt;
+                    }
+                } catch (e) { /* ignore */ }
+            } catch (err) { console.error('Error in colleges stats listener', err); }
+        }, console.error);
+    }
+
+    // Homepage counters driven by Firestore (users, careers, colleges)
+    let homepageStatsUnsub = { users: null, careers: null, colleges: null };
+    function loadHomepageStats() {
+        if (!db) return;
+        if (!homepageStatsUnsub.users) homepageStatsUnsub.users = db.collection('users').onSnapshot(snap => {
+            try {
+                const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
+                const count = nonAdmin.length;
+                if (studentsCount) animateCounter(studentsCount, count);
+            } catch (e) { console.error('Error updating homepage students stat', e); }
+        }, err => console.error('Homepage users stats listener failed', err));
+
+        if (!homepageStatsUnsub.careers) homepageStatsUnsub.careers = db.collection('careers').onSnapshot(snap => {
+            try { if (careersCount) animateCounter(careersCount, snap.size); } catch (e) { console.error('Error updating homepage careers stat', e); }
+        }, err => console.error('Homepage careers stats listener failed', err));
+
+        if (!homepageStatsUnsub.colleges) homepageStatsUnsub.colleges = db.collection('colleges').onSnapshot(snap => {
+            try { if (collegesCount) animateCounter(collegesCount, snap.size); } catch (e) { console.error('Error updating homepage colleges stat', e); }
+        }, err => console.error('Homepage colleges stats listener failed', err));
+        // One-time fetch fallback in case listeners don't fire (helpful for debugging / permissions issues)
+        try {
+            // Users count fallback
+            db.collection('users').get().then(snap => {
+                try {
+                    const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
+                    const count = nonAdmin.length;
+                    if (studentsCount) animateCounter(studentsCount, count);
+                } catch (e) { console.warn('Homepage users fallback failed', e); }
+            }).catch(err => console.warn('Homepage users fallback get() failed', err));
+
+            // Careers count fallback
+            db.collection('careers').get().then(snap => {
+                try { if (careersCount) animateCounter(careersCount, snap.size); } catch (e) { console.warn('Homepage careers fallback failed', e); }
+            }).catch(err => console.warn('Homepage careers fallback get() failed', err));
+
+            // Colleges count fallback
+            db.collection('colleges').get().then(snap => {
+                try { if (collegesCount) animateCounter(collegesCount, snap.size); } catch (e) { console.warn('Homepage colleges fallback failed', e); }
+            }).catch(err => console.warn('Homepage colleges fallback get() failed', err));
+        } catch (e) { console.warn('Homepage stats fallback aborted', e); }
+    }
+
+    function cleanupHomepageStats() {
+        try {
+            if (homepageStatsUnsub.users) { homepageStatsUnsub.users(); homepageStatsUnsub.users = null; }
+            if (homepageStatsUnsub.careers) { homepageStatsUnsub.careers(); homepageStatsUnsub.careers = null; }
+            if (homepageStatsUnsub.colleges) { homepageStatsUnsub.colleges(); homepageStatsUnsub.colleges = null; }
+        } catch (e) { console.error('Error cleaning up homepage stats', e); }
+    }
+
+    // Single listener for career-explorer header stats
+    // Computes: total career paths, government jobs (type === 'government'), and emerging fields (avgSalary > 20 LPA)
+    let explorerStatsUnsub = { careers: null };
+    function parseAvgSalaryToLPA(raw) {
+        // raw may be a number (LPA) or a string like "₹4-25 LPA" or "20 LPA". Return numeric LPA (highest number found) or 0.
+        if (raw == null) return 0;
+        if (typeof raw === 'number') return raw;
+        try {
+            const s = raw.toString();
+            const matches = s.match(/\d+(?:\.\d+)?/g);
+            if (!matches || matches.length === 0) return 0;
+            // convert to numbers and take the largest (handles ranges like 4-25)
+            const nums = matches.map(m => parseFloat(m)).filter(n => !isNaN(n));
+            if (nums.length === 0) return 0;
+            return Math.max(...nums);
+        } catch (e) { return 0; }
+    }
+
+    function loadCareerExplorerStats() {
+        if (!db) return;
+        if (explorerStatsUnsub.careers) return; // already listening
+        explorerStatsUnsub.careers = db.collection('careers').onSnapshot(snap => {
+            try {
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const total = docs.length;
+                // Count government-type careers (case-insensitive match)
+                const governmentCount = docs.filter(d => (d.type || '').toString().toLowerCase() === 'government').length;
+                // Emerging fields: avgSalary numeric (LPA) > 20
+                const emergingCount = docs.filter(d => {
+                    const val = parseAvgSalaryToLPA(d.avgSalary);
+                    return val > 20;
+                }).length;
+
+                if (studentsCountCareerBox) {
+                    try { studentsCountCareerBox.querySelector('.number').textContent = `${total}+`; } catch (e) { studentsCountCareerBox.textContent = `${total}+`; }
+                }
+                if (careersCountCareerBox) {
+                    try { careersCountCareerBox.querySelector('.number').textContent = `${governmentCount}+`; } catch (e) { careersCountCareerBox.textContent = `${governmentCount}+`; }
+                }
+                if (collegesCountCareerBox) {
+                    try { collegesCountCareerBox.querySelector('.number').textContent = `${emergingCount}+`; } catch (e) { collegesCountCareerBox.textContent = `${emergingCount}+`; }
+                }
+            } catch (e) { console.error('Error processing career-explorer stats', e); }
+        }, err => { console.error('Explorer careers stats listener failed', err); });
+    }
+
+    function cleanupCareerExplorerStats() {
+        try {
+            if (explorerStatsUnsub.students) { explorerStatsUnsub.students(); explorerStatsUnsub.students = null; }
+            if (explorerStatsUnsub.careers) { explorerStatsUnsub.careers(); explorerStatsUnsub.careers = null; }
+            if (explorerStatsUnsub.colleges) { explorerStatsUnsub.colleges(); explorerStatsUnsub.colleges = null; }
+        } catch (err) { console.error('Error cleaning up explorer stats', err); }
+    }
+
+    function cleanupDynamicStats() {
+        try {
+            if (statsUnsubs.users) { statsUnsubs.users(); statsUnsubs.users = null; }
+            if (statsUnsubs.careers) { statsUnsubs.careers(); statsUnsubs.careers = null; }
+            if (statsUnsubs.colleges) { statsUnsubs.colleges(); statsUnsubs.colleges = null; }
+            lastStats = { students: null, careers: null, colleges: null };
+        } catch (err) { console.error('Error cleaning up stats listeners', err); }
+    }
+
     async function sendMessageToAI() {
         const message = chatInput.value.trim();
         if (message === '') return;
@@ -927,8 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         typingBubble.innerHTML = `
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-    `;
+        <div class="typing-dot"></div>`;
         chatWindow.appendChild(typingBubble);
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
@@ -938,10 +1343,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (indicator) indicator.remove();
     }
 
-    async function generateAIResponse(userMessage) {
-        const API_KEY = "AIzaSyDFN2Qd-gi2rMW-cqkHM35p9kIM036tsjw";
-        const url =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
+async function generateAIResponse(userMessage) {
+    const API_KEY = "YOUR_GEMINI_API_KEY"; 
+    const url =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
 
         const body = {
             contents: [
@@ -997,12 +1402,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     careerFilterButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // toggle active class for UI
             careerFilterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            const filter = button.dataset.filter;
-            careerCards.forEach(card => {
-                if (filter === 'all' || card.dataset.category === filter) {
-                    card.style.display = 'block';
+            const filter = (button.dataset.filter || 'all').toString().toLowerCase();
+            // query current cards at runtime
+            const currentCards = document.querySelectorAll('#career-grid-container .career-card');
+            currentCards.forEach(card => {
+                const cat = (card.dataset.category || '').toString().toLowerCase();
+                if (filter === 'all' || cat === filter) {
+                    card.style.display = '';
                 } else {
                     card.style.display = 'none';
                 }
@@ -1055,6 +1464,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    
+    
     loadCollegesFromFirestore();
+    try { loadCareersFromFirestore(); } catch (e) { console.error('Failed to load careers', e); }
+    try { loadDynamicStats(); } catch (e) { console.error('Failed to start dynamic stats', e); }
+    try { loadTestimonialsForHomepage(); } catch (e) { console.error('Failed to start testimonials listener', e); }
+    try { loadHomepageStats(); } catch (e) { console.error('Failed to start homepage stats', e); }
     showPage('homepage-content'); // Start on the homepage
 });
