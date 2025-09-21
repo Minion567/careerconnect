@@ -382,11 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         if (pageId === 'homepage-content') {
-            if (studentsCount && studentsCount.textContent === "0") {
-                animateCounter(studentsCount, 25847);
-                animateCounter(careersCount, 180);
-                animateCounter(collegesCount, 1200);
-            }
+            // Homepage stats are now handled by loadHomepageStats() via Firestore listeners
+            // No need for hardcoded fallback numbers here
         }
         // Start/stop career-explorer specific listeners
         if (pageId === 'career-explorer-content') {
@@ -781,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Persist compare list and refresh rendered college cards so button states update
     function setCompareListAndRefresh(list) { setCompareList(list); try { applyFiltersAndSort(); } catch (e) { /* ignore */ } }
     function toggleCompareCollege(col) {
+        console.log('toggleCompareCollege called with:', col);
         const list = getCompareList();
         const exists = list.find(i => i.id === col.id);
         if (exists) {
@@ -791,6 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
             list.push(col);
             setCompareListAndRefresh(list);
         }
+        console.log('After toggle, compare list:', getCompareList());
         // Show/hide compare bar depending on page. If user isn't on colleges page, take them there so they see selections.
         const collegesPage = document.getElementById('colleges-content');
         const isOnColleges = collegesPage && collegesPage.classList.contains('active');
@@ -802,7 +801,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // refresh bar immediately
                 renderCompareBar();
             }
-        } catch (e) { /* ignore */ }
+        } catch (e) { console.error('Error in toggleCompareCollege:', e); }
     }
     function renderCompareBadge() {
         const el = document.getElementById('compare-badge');
@@ -950,6 +949,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const collegesPage = document.getElementById('colleges-content');
         const isActive = collegesPage && collegesPage.classList.contains('active');
         const list = getCompareList();
+        console.log('showCompareBarIfOnColleges:', { hasBar: !!b, isActive, listLength: list.length });
         if (isActive && list.length > 0) b.style.display = 'flex'; else b.style.display = 'none';
     }
 
@@ -1131,11 +1131,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // avoid duplicate listeners
         if (statsUnsubs.users || statsUnsubs.careers || statsUnsubs.colleges) return;
 
-        // Users count (exclude admin)
+        // Users count - total users for public stats
         statsUnsubs.users = db.collection('users').onSnapshot(snap => {
             try {
-                const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
-                const count = nonAdmin.length;
+                const count = snap.size;
                 const el = document.getElementById('students-count');
                 if (el && lastStats.students !== count) { animateCounter(el, count); lastStats.students = count; }
             } catch (err) { console.error('Error in users stats listener', err); }
@@ -1176,8 +1175,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!db) return;
         if (!homepageStatsUnsub.users) homepageStatsUnsub.users = db.collection('users').onSnapshot(snap => {
             try {
-                const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
-                const count = nonAdmin.length;
+                // Count all users - for public stats, total user count is more meaningful
+                const count = snap.size;
                 if (studentsCount) animateCounter(studentsCount, count);
             } catch (e) { console.error('Error updating homepage students stat', e); }
         }, err => console.error('Homepage users stats listener failed', err));
@@ -1194,8 +1193,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Users count fallback
             db.collection('users').get().then(snap => {
                 try {
-                    const nonAdmin = snap.docs.filter(d => ((d.data() && d.data().email) || '').toString().toLowerCase() !== 'admin@careerconnect.com');
-                    const count = nonAdmin.length;
+                    // Count all users for public stats
+                    const count = snap.size;
                     if (studentsCount) animateCounter(studentsCount, count);
                 } catch (e) { console.warn('Homepage users fallback failed', e); }
             }).catch(err => console.warn('Homepage users fallback get() failed', err));
