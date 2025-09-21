@@ -78,8 +78,117 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatWindow = document.getElementById('chat-window');
 
     // --- STATIC DATA ---
+    // 12 personality-oriented assessment questions. Each option assigns weights to
+    // the four streams used by the existing quiz logic: Science, Arts, Commerce, Vocational.
     const questions = [
-        // Your questions array remains here...
+        {
+            text: 'When solving a problem, you prefer to:',
+            options: [
+                { text: 'Break it down logically and use formulas', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Consider people and feelings involved', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Look for cost/benefit and practical outcomes', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Try a hands-on prototype or experiment', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'You get energy from:',
+            options: [
+                { text: 'Learning technical systems and how things work', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Creating stories, art, or music', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Negotiating deals or organizing projects', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Working with tools or physical materials', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'Your preferred learning style is:',
+            options: [
+                { text: 'Theoretical and conceptual', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Observational and reflective', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Case-based and practical business examples', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Hands-on, learn-by-doing', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'In a team, you often act as the:',
+            options: [
+                { text: 'Analyst / specialist', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Communicator / storyteller', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Coordinator / planner', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Implementer / builder', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'You judge success by:',
+            options: [
+                { text: 'Accuracy, correctness, and evidence', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Expression, aesthetics, and impact', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Profitability, efficiency, and results', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Practical usefulness and durability', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'You enjoy tasks that are:',
+            options: [
+                { text: 'Abstract and logical', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Open-ended and interpretive', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Structured with clear objectives', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Tactile and kinaesthetic', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'When you face a challenge, you first:',
+            options: [
+                { text: 'Gather data and run experiments', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Reflect on meaning and context', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Check budgets and stakeholder needs', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Sketch or prototype a quick solution', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'Which description fits you best?',
+            options: [
+                { text: 'Precise, curious, methodical', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Imaginative, empathetic, expressive', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Practical, strategic, organised', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Resourceful, hands-on, craft-oriented', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'If you had a free project, you would pick:',
+            options: [
+                { text: 'Build a data tool or experiment', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Write a short film or design a poster', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Start a small online business', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Make furniture or restore a gadget', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'You prefer feedback that is:',
+            options: [
+                { text: 'Technical and detail-oriented', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Emotional and narrative-based', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Business-focused and measurable', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Practical tips you can apply immediately', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'Your ideal workplace rhythm is:',
+            options: [
+                { text: 'Deep focused sprints (research/code)', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Flexible creative bursts', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Fast-paced, goal-driven days', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Hands-on workshops and building', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        },
+        {
+            text: 'What matters most when choosing a career?',
+            options: [
+                { text: 'Intellectual challenge and growth', weights: { Science: 3, Arts: 0, Commerce: 0, Vocational: 0 } },
+                { text: 'Meaningful expression or social impact', weights: { Science: 0, Arts: 3, Commerce: 0, Vocational: 0 } },
+                { text: 'Stability and earning potential', weights: { Science: 0, Arts: 0, Commerce: 3, Vocational: 0 } },
+                { text: 'Practical skill and autonomy', weights: { Science: 0, Arts: 0, Commerce: 0, Vocational: 3 } }
+            ]
+        }
     ];
 
     // ===================================================================
@@ -855,14 +964,12 @@ document.addEventListener('DOMContentLoaded', () => {
             chip.innerHTML = `<span class="chip-name">${escapeHtml(col.name)}</span><button class="remove-chip" data-id="${col.id}" title="Remove ${escapeHtml(col.name)}" aria-label="Remove ${escapeHtml(col.name)}">✕</button>`;
             chipsContainer.appendChild(chip);
         });
-        // wire remove (click + keyboard support)
         chipsContainer.querySelectorAll('.remove-chip').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
                 setCompareListAndRefresh(getCompareList().filter(c => c.id !== id));
             });
             btn.addEventListener('keydown', (e) => {
-                // allow Enter or Space to activate the remove button for keyboard users
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     e.currentTarget.click();
@@ -871,12 +978,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const nowBtn = document.getElementById('compare-now');
         if (nowBtn) nowBtn.disabled = list.length < 2;
-        // show/hide depending on current page
         showCompareBarIfOnColleges();
 
     }
 
-    // Render initially
     try { renderCompareBar(); } catch (e) { /* ignore */ }
 
     // Dashboard Logic
@@ -1359,11 +1464,7 @@ async function generateAIResponse(userMessage) {
         });
     });
 
-    // ... The rest of your script.js file remains unchanged (handleSignup, handleLogin, Quiz Logic, etc.) ...
     
-    // --- INITIAL LOAD ---
-    // Note: The automatic redirect timer from the previous request has been removed as this new UI element is a better approach.
-    // If you still want the redirect, you can add the setTimeout code back here.
     
     loadCollegesFromFirestore();
     try { loadCareersFromFirestore(); } catch (e) { console.error('Failed to load careers', e); }

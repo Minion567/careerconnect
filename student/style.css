@@ -1,8 +1,10 @@
-
+/* ======================================================================== */
+/* ! --- FONT & BASE STYLES --- */
+/* ======================================================================== */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
-  
+  /* Colors */
   --color-primary: #1e40af;
   --color-primary-700: #1d4ed8;
   --color-primary-100: #dbeafe;
@@ -17,7 +19,7 @@
   --color-text-secondary: #64748b;
   --color-text-muted: #94a3b8;
   --color-border: #e2e8f0;
-  --color-text-footer: #d1d5db;
+  --color-text-footer: #d1d5db; /* gray-300 */
   --color-warning: #d97706;
 
   /* Shadows */
@@ -106,9 +108,9 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
-  background-color: transparent;
+  background-color: var(--color-secondary);
+  color: white;
+  padding: 1rem 2rem;
   font-size: 1.125rem;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -117,34 +119,63 @@ a {
   cursor: pointer;
 }
 .btn-secondary:hover {
-  background-color: var(--color-primary);
-  color: white;
-}
-.btn-secondary:hover {
-  background-color: var(--color-primary);
-  color: white;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-outline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
-}
-
-.compare-winner {
-  background-color: rgba(34,197,94,0.08); /* subtle green */
-  border-left: 4px solid rgba(34,197,94,0.25);
-  color: white;
+  border: 0px solid white;
+  color: rgb(27, 21, 218); /* This is the initial text color */
+  background-color: rgb(237, 237, 240);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all 250ms ease-out;
   cursor: pointer;
 }
-.btn-outline:hover {
-  background-color: white;
-  color: var(--color-primary);
-  color:white;
+.btn-outline:hover{
+  background-color:blue !important;
+  color:white !important;
+}
+.compare-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid white;
+  color: rgb(27, 21, 218); /* This is the initial text color */
+  background-color: rgb(237, 237, 240);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+  cursor: pointer;
+}
+.compare-btn:hover {
+  background-color: rgb(7, 7, 245);
+  color: white; /* Add this line to change the text color on hover */
+}
+.btn-outline{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid white;
+  color: rgb(27, 21, 218); /* This is the initial text color */
+  background-color: rgb(237, 237, 240);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+  cursor: pointer;
+}
+.btn-outlin:hover {
+  background-color: rgb(7, 7, 245);
+  color: white; /* Add this line to change the text color on hover */
 }
 
 .btn-outline-light {
@@ -159,10 +190,21 @@ a {
   border-radius: 0.5rem;
   transition: all 250ms ease-out;
   cursor: pointer;
-  background-color: white;
+
 }
-.btn-outline-light:hover {
-  background-color: var(--color-surface);
+.btn-outline:hover {
+  background-color: rgba(72, 72, 213, 0.345);
+  color:white;
+}
+
+.compare-winner {
+  background-color: rgba(34,197,94,0.08); 
+  border-left: 4px solid rgba(34,197,94,0.25);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 250ms ease-out;
+  cursor: pointer;
 }
 
 .card {
@@ -296,9 +338,7 @@ a {
   color: var(--color-text-primary);
 }
 
-/* ======================================================================== */
-/* ! --- HOMEPAGE STYLES --- */
-/* ======================================================================== */
+
 .hero-section {
   position: relative;
   background: linear-gradient(
@@ -1123,50 +1163,6 @@ a {
   border-color: var(--color-primary);
 }
 
-/* Make filter pills look like the attached screenshot: subtle surface background, thin border, blue active ring */
-.filter-btn {
-  background: rgba(15,23,42,0.03); /* subtle gray */
-  border: 1px solid rgba(15,23,42,0.06);
-  color: var(--color-text-secondary);
-}
-.filter-btn:hover {
-  background: rgba(30,64,175,0.06);
-  color: var(--color-primary);
-}
-
-/* Outline-style buttons used across the site */
-.btn-outline {
-  padding: 0.5rem 0.9rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-primary-200, var(--color-primary));
-  background: white;
-  color: var(--color-primary);
-  font-weight: 600;
-  transition: all 180ms ease;
-}
-.btn-outline:hover {
-  background: var(--color-primary);
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* Career compare button inside cards */
-.career-compare-btn {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-primary-100);
-  background: white;
-  color: var(--color-primary);
-  font-weight: 600;
-  cursor: pointer;
-}
-.career-compare-btn.selected {
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-700));
-  color: white;
-  border-color: transparent;
-}
-.career-compare-btn:hover { box-shadow: var(--shadow-sm); }
-
 .career-grid-section {
   padding: 4rem 0;
 }
@@ -1521,93 +1517,36 @@ a {
   color: white;
 }
 
-/* Compare bar (sticky bottom-right) */
-#compare-bar {
-  position: fixed;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  z-index: 1000;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-elevated);
-  display: flex;
-  padding: 0.5rem;
-  align-items: center;
-  min-width: 260px;
-  max-width: 420px;
+/* ======================================================================== */
+/* ! --- ASSESSMENT PAGE STYLES --- */
+/* ======================================================================== */
+.assessment-hero {
+  padding: 5rem 0;
+  text-align: center;
+  background: linear-gradient(
+    to bottom right,
+    var(--color-primary-50),
+    #fff7ed
+  );
 }
-#compare-bar .compare-inner {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  width: 100%;
-  padding: 0.25rem 0.5rem;
-}
-#compare-chips {
-  display: flex;
-  gap: 0.5rem;
-  overflow: hidden;
-  flex: 1 1 auto;
-  align-items: center;
-}
-.compare-chip {
-  background: var(--color-surface);
-  padding: 0.35rem 0.6rem;
-  border-radius: 0.5rem;
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  white-space: nowrap;
+.assessment-hero .hero-badge {
+  display: inline-block;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-sm);
   font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
 }
-.compare-chip .chip-name {
-  max-width: 10rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.assessment-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
 }
-.compare-chip .remove-chip {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 0.25rem;
-  color: var(--color-text-muted);
-}
-.compare-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-.compare-now-btn {
-  padding: 0.45rem 0.8rem;
-  font-size: 0.9rem;
-}
-@media (max-width: 768px) {
-  #compare-bar { right: 0.75rem; left: 0.75rem; bottom: 1rem; max-width: calc(100% - 2rem); }
-  .compare-chip .chip-name { max-width: 6rem; }
-}
-
-/* Compare modal and table styling */
-.compare-modal {
-  max-width: 1280px; /* increased to make table wider like screenshot */
-  width: calc(100% - 4rem);
-  max-height: 85vh;
-  overflow: auto;
-}
-.compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;
-}
-.compare-table th,
-.compare-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--color-border);
-  text-align: left;
-}
-
-.compare-winner {
-  background-color: rgba(34,197,94,0.08); /* subtle green */
-  border-left: 4px solid rgba(34,197,94,0.25);
+.assessment-hero p {
+  max-width: 42rem;
+  margin: 0 auto 2rem auto;
+  color: var(--color-text-secondary);
 }
 .assessment-hero .stats-cards {
   display: grid;
@@ -2482,6 +2421,7 @@ a {
     padding: 0.75rem;
 }
 
+/* Responsive adjustments for the card on small screens */
 @media (max-width: 480px) {
     .feedback-card {
         bottom: 10px;
@@ -2491,4 +2431,3 @@ a {
         padding: 1.25rem;
     }
 }
-
